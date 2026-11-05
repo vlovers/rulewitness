@@ -17,13 +17,13 @@ Do not reinterpret a user's request for large batches as permission to bypass te
 
 ## Roles and ownership
 
-| Role | Accountable for | Must not do |
-| --- | --- | --- |
-| Coordinator | Triage, dependency graph, file ownership, integration order, blocker escalation and evidence ledger | Bypass maintainer approvals or silently change another agent's scope |
-| Implementer | One coherent scoped batch, tests, docs, isolated branch/worktree and PR | Edit a peer's reserved files without negotiated ownership |
-| Independent reviewer | Actual base-to-head diff and error-path analysis; severity-ranked, reproducible findings | Treat own self-review or an AI summary as approved GitHub review |
-| Validation agent | Repeatable test/CI evidence pinned to the reviewed head SHA, including failure paths | Claim tests were run if only read or simulated |
-| Maintainer | Acceptance, merge/release authorization and risk decisions | Assume an AI-generated review satisfies repository protection rules |
+| Role                 | Accountable for                                                                                     | Must not do                                                          |
+| -------------------- | --------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Coordinator          | Triage, dependency graph, file ownership, integration order, blocker escalation and evidence ledger | Bypass maintainer approvals or silently change another agent's scope |
+| Implementer          | One coherent scoped batch, tests, docs, isolated branch/worktree and PR                             | Edit a peer's reserved files without negotiated ownership            |
+| Independent reviewer | Actual base-to-head diff and error-path analysis; severity-ranked, reproducible findings            | Treat own self-review or an AI summary as approved GitHub review     |
+| Validation agent     | Repeatable test/CI evidence pinned to the reviewed head SHA, including failure paths                | Claim tests were run if only read or simulated                       |
+| Maintainer           | Acceptance, merge/release authorization and risk decisions                                          | Assume an AI-generated review satisfies repository protection rules  |
 
 One agent may fill different roles on different tasks, but the implementer cannot count as independent reviewer for the same change. AI reviewer feedback is advisory; GitHub's configured human review gates still govern.
 
@@ -68,9 +68,9 @@ If two batches touch the same contract, schema, oracle, lockfile, CI workflow, o
 
 Use a parent GitHub Issue as the single source of truth; update a short table after every meaningful transition:
 
-| Batch / Issue | Owner | Branch or PR | Depends on | Status | Last verified head SHA | Review and CI evidence |
-| --- | --- | --- | --- | --- | --- | --- |
-| Example | Agent A | PR #... | none | in review | full SHA | CI URL, reviewer finding |
+| Batch / Issue | Owner   | Branch or PR | Depends on | Status    | Last verified head SHA | Review and CI evidence   |
+| ------------- | ------- | ------------ | ---------- | --------- | ---------------------- | ------------------------ |
+| Example       | Agent A | PR #...      | none       | in review | full SHA               | CI URL, reviewer finding |
 
 Allowed statuses: `planned` → `claimed` → `in progress` → `in review` → `changes requested` → `verified` → `accepted` → `integrated`. A blocked task remains `blocked` with its prerequisite and owner stated. Do not confuse `verified`, `accepted`, `integrated`, and `released`.
 
