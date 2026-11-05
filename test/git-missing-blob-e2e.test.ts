@@ -353,7 +353,7 @@ test("a missing commit object fails closed before reading tracked settings", () 
     const base = f.commit("README.md", "Security fixture");
     const head = f.commit(
       ".codex/config.toml",
-      'sandbox_mode = "read-only"\\napproval_policy = "on-request"\\n',
+      'sandbox_mode = "read-only"\napproval_policy = "on-request"\n',
     );
     const commitPath = join(
       f.root,
