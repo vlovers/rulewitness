@@ -86,3 +86,37 @@ test("symlink into outside repository blocks", () =>
     );
     assert.match(checkGovernance(root).join("\n"), /escapes repository/);
   }));
+
+test("symlinked required contract outside repository blocks", () =>
+  fixture((root, outside) => {
+    const target = join(root, "docs/engineering/REVIEW_POLICY.md");
+    rmSync(target);
+    const external = join(outside, "REVIEW_POLICY.md");
+    writeFileSync(external, "# External review policy\n\nThis must not be trusted.\n");
+    symlinkSync(external, target);
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /REVIEW_POLICY.md: missing, unreadable or escapes repository/,
+    );
+  }));
+
+test("encoded traversal in local link blocks", () =>
+  fixture((root) => {
+    writeFileSync(
+      join(root, "CLAUDE.md"),
+      "# Claude\n\n[AGENTS.md](AGENTS.md) [unsafe](%2e%2e/%2e%2e/outside.md)\n",
+    );
+    assert.match(checkGovernance(root).join("\n"), /escapes repository/);
+  }));
+
+test("malformed percent escape in link fails closed", () =>
+  fixture((root) => {
+    writeFileSync(
+      join(root, "CLAUDE.md"),
+      "# Claude\n\n[AGENTS.md](AGENTS.md) [invalid](%ZZ.md)\n",
+    );
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /broken or unsafe local link/,
+    );
+  }));
