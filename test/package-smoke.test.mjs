@@ -938,6 +938,62 @@ console.log("Installed experimental envelopes verified");`,
   );
 });
 
+test("package: experimental v2 TypeScript discriminants compile from installed tarball", () => {
+  writeFileSync(
+    join(consumer, "verify-v2-provider-types.ts"),
+    `import {
+  createExperimentalClaudeEnvelope,
+  createExperimentalCodexEnvelope,
+} from "rulewitness";
+import type {
+  ExperimentalProviderEnvelope,
+  ExperimentalClaudeComparisonEnvelope,
+  ExperimentalCodexPostureEnvelope,
+  Report,
+} from "rulewitness";
+type Assert<T extends true> = T;
+type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends
+  (<T>() => T extends B ? 1 : 2) ? true : false;
+type V2Version = Assert<Equal<ExperimentalProviderEnvelope["schemaVersion"], 2>>;
+type NoRuntime = Assert<Equal<ExperimentalProviderEnvelope["runtimeVerified"], false>>;
+type ClaudeKind = Assert<Equal<ExperimentalClaudeComparisonEnvelope["analysisKind"], "modeled-permission-decision-diff">>;
+type CodexKind = Assert<Equal<ExperimentalCodexPostureEnvelope["analysisKind"], "configured-posture-diff">>;
+type NoCodexPermissions = Assert<Equal<ExperimentalCodexPostureEnvelope["runtimePermissionDiff"], false>>;
+function render(value: ExperimentalProviderEnvelope): string {
+  switch (value.analysisKind) {
+    case "modeled-permission-decision-diff":
+      return value.report.provider + value.outcome;
+    case "configured-posture-diff":
+      return value.provider + value.outcome + value.runtimePermissionDiff;
+    default: {
+      const neverValue: never = value;
+      throw new Error(String(neverValue));
+    }
+  }
+}
+const cl: (report: Report) => ExperimentalClaudeComparisonEnvelope = createExperimentalClaudeEnvelope;
+const cx: typeof createExperimentalCodexEnvelope = createExperimentalCodexEnvelope;
+void render; void cl; void cx;
+`,
+  );
+  execFileSync(
+    process.execPath,
+    [
+      join(root, "node_modules/typescript/bin/tsc"),
+      "--noEmit",
+      "--strict",
+      "--module",
+      "nodenext",
+      "--moduleResolution",
+      "nodenext",
+      "--target",
+      "es2024",
+      "verify-v2-provider-types.ts",
+    ],
+    { cwd: consumer, encoding: "utf8", env },
+  );
+});
+
 test("package: stable v0.3.0 TypeScript report and policy contracts compile from installed tarball", () => {
   writeFileSync(
     join(consumer, "verify-v03-types.ts"),
