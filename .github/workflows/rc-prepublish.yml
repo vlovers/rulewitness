@@ -1,4 +1,4 @@
-name: RC candidate prepublish verification
+name: RC registry and package verification
 on:
   pull_request:
     paths:
@@ -6,6 +6,7 @@ on:
       - package.json
       - package-lock.json
       - CHANGELOG.md
+      - scripts/verify-rc-registry.mjs
   workflow_dispatch:
 
 permissions:
@@ -24,7 +25,7 @@ jobs:
         with:
           node-version: 24
           package-manager-cache: false
-      - name: Check candidate version, lockfile, changelog and unpublished registry state
+      - name: Check candidate version, lockfile, changelog and read-only npm registry state
         shell: bash
         run: |
           set -euo pipefail
@@ -42,16 +43,18 @@ jobs:
           '
           npm view rulewitness versions --json --registry=https://registry.npmjs.org/ --prefer-online --cache="$RUNNER_TEMP/prepublish-cache" > "$RUNNER_TEMP/versions.json"
           npm view rulewitness dist-tags --json --registry=https://registry.npmjs.org/ --prefer-online --cache="$RUNNER_TEMP/prepublish-cache" > "$RUNNER_TEMP/tags.json"
-          node --input-type=module -e '
-            import fs from "node:fs";
-            const versions = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/versions.json", "utf8"));
-            const tags = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/tags.json", "utf8"));
-            if (!Array.isArray(versions) || versions.includes("0.4.0-rc.3") ||
-                tags.latest !== "0.3.0" || tags.next !== "0.4.0-rc.2") {
-              throw Error("Registry state changed; re-audit before publishing");
-            }
-            console.log("Unpublished rc.3 verified; stable latest preserved");
-          '
+          if npm view rulewitness@0.4.0-rc.3 dist.integrity --json --registry=https://registry.npmjs.org/ --prefer-online --cache="$RUNNER_TEMP/prepublish-cache" > "$RUNNER_TEMP/rc-integrity.json" 2> "$RUNNER_TEMP/rc-lookup-error.txt"; then
+            :
+          else
+            # An absent prerelease is valid before publication, but unexpected
+            # registry failures are not. Only a verified 404 may map to null.
+            if ! grep -q 'E404' "$RUNNER_TEMP/rc-lookup-error.txt"; then
+              cat "$RUNNER_TEMP/rc-lookup-error.txt" >&2
+              exit 1
+            fi
+            printf 'null\\n' > "$RUNNER_TEMP/rc-integrity.json"
+          fi
+          node scripts/verify-rc-registry.mjs "$RUNNER_TEMP/versions.json" "$RUNNER_TEMP/tags.json" "$RUNNER_TEMP/rc-integrity.json"
       - name: Check compiled tarball and isolated installed consumer
         run: |
           npm ci --ignore-scripts --no-audit --no-fund
@@ -61,7 +64,7 @@ jobs:
           npm run test:package
           node test/release-artifact-integrity.mjs
           npm run format:check
-      - name: Record exact prepublish candidate commit
+      - name: Record exact verified candidate commit
         env:
           EVENT: ${{ github.event_name }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
