@@ -34,7 +34,11 @@ test("release docs reflect exact source candidate without inventing npm publicat
     ["CHANGELOG.md", changelog],
   ] as const) {
     assert.match(content, /GitHub prerelease/i, `${path}: GitHub release`);
-    assert.match(content, /npm.{0,100}(unverified|not been independently verified|has not been independently verified|availability unverified)/i, `${path}: npm claim must remain evidence-scoped`);
+    assert.match(
+      content,
+      /npm.{0,100}(unverified|not been independently verified|has not been independently verified|availability unverified)/i,
+      `${path}: npm claim must remain evidence-scoped`,
+    );
   }
   assert.doesNotMatch(
     readiness,
@@ -54,5 +58,8 @@ test("documented stable install remains pinned, not accidentally switched to unv
   const readme = read("README.md");
   assert.match(readme, /npm install --save-dev rulewitness@0\.3\.0/);
   assert.match(readme, /npm install --global rulewitness@0\.3\.0/);
-  assert.doesNotMatch(readme, /npm install (?:--global|--save-dev) rulewitness@0\.4\.0-rc\.3/);
+  assert.doesNotMatch(
+    readme,
+    /npm install (?:--global|--save-dev) rulewitness@0\.4\.0-rc\.3/,
+  );
 });
