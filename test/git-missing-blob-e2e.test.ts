@@ -304,3 +304,79 @@ test("a corrupt tracked Git blob fails closed without leaking its contents", () 
     f.close();
   }
 });
+
+test("a missing nested settings tree fails closed instead of appearing absent", () => {
+  const f = fixture();
+  try {
+    const base = f.commit("README.md", "Security fixture");
+    const head = f.commit(
+      ".claude/settings.json",
+      '{"permissions":{"allow":["Bash(npm test)"]}}',
+    );
+    const tree = f.git("rev-parse", `${head}:.claude`);
+    assert.match(tree, /^[0-9a-f]{40}$/);
+    assert.equal(f.git("cat-file", "-t", tree), "tree");
+    const treePath = join(
+      f.root,
+      ".git",
+      "objects",
+      tree.slice(0, 2),
+      tree.slice(2),
+    );
+    assert.ok(existsSync(treePath), "Fixture requires a loose nested tree");
+    const status = f.git("status", "--porcelain=v1");
+    const index = readFileSync(join(f.root, ".git/index"));
+    rmSync(treePath);
+
+    assert.throws(
+      () => readPolicy(f.root, head),
+      /Read-only Git operation failed/,
+    );
+    assert.throws(
+      () => readTrackedProviderSnapshot(f.root, head),
+      /Read-only Git operation failed/,
+    );
+    const result = cliResult(f.root, "compare", base, head, "--json");
+    assert.equal(result.status, 2, result.stderr);
+    assert.equal(result.stdout, "");
+    assert.equal(f.git("rev-parse", "HEAD"), head);
+    assert.equal(f.git("status", "--porcelain=v1"), status);
+    assert.deepEqual(readFileSync(join(f.root, ".git/index")), index);
+  } finally {
+    f.close();
+  }
+});
+
+test("a missing commit object fails closed before reading tracked settings", () => {
+  const f = fixture();
+  try {
+    const base = f.commit("README.md", "Security fixture");
+    const head = f.commit(
+      ".codex/config.toml",
+      'sandbox_mode = "read-only"\\napproval_policy = "on-request"\\n',
+    );
+    const commitPath = join(
+      f.root,
+      ".git",
+      "objects",
+      head.slice(0, 2),
+      head.slice(2),
+    );
+    assert.ok(existsSync(commitPath), "Fixture requires a loose commit");
+    const index = readFileSync(join(f.root, ".git/index"));
+    rmSync(commitPath);
+
+    assert.throws(
+      () => readTrackedCodexPosture(f.root, head),
+      /Read-only Git operation failed/,
+    );
+    const result = cliResult(f.root, "codex-posture", base, head, "--json");
+    assert.equal(result.status, 2, result.stderr);
+    assert.equal(result.stdout, "");
+    assert.ok(!result.stderr.includes("on-request"));
+    assert.equal(f.git("rev-parse", "HEAD"), head);
+    assert.deepEqual(readFileSync(join(f.root, ".git/index")), index);
+  } finally {
+    f.close();
+  }
+});
