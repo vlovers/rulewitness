@@ -15,7 +15,7 @@ const sources = [
   ["CHANGELOG.md", read("CHANGELOG.md")],
 ] as const;
 
-test("release docs reflect exact source candidate without inventing npm publication", () => {
+test("release docs scope verified npm publication to the recorded registry observation", () => {
   assert.equal(packageJson.version, "0.4.0-rc.3");
   for (const [path, content] of sources) {
     assert.ok(
@@ -36,8 +36,23 @@ test("release docs reflect exact source candidate without inventing npm publicat
     assert.match(content, /GitHub prerelease/i, `${path}: GitHub release`);
     assert.match(
       content,
-      /npm.{0,100}(unverified|not been independently verified|has not been independently verified|availability unverified)/i,
-      `${path}: npm claim must remain evidence-scoped`,
+      /Registry check|registry check|registry observation|registry audit/i,
+      `${path}: npm status must cite registry evidence`,
+    );
+    assert.match(
+      content,
+      /41952270676/,
+      `${path}: npm claim must cite the successful read-only registry run`,
+    );
+    assert.match(
+      content,
+      /2026-11-05 02:00 UTC/,
+      `${path}: npm observation must be time-scoped`,
+    );
+    assert.match(
+      content,
+      /provenance/i,
+      `${path}: registry presence does not establish package provenance`,
     );
   }
   assert.doesNotMatch(
