@@ -18,4 +18,11 @@ This checklist is a gate, **not authorization** to release.
 - [ ] Inspect `npm pack` contents and test the tarball in a clean offline external consumer with lifecycle scripts disabled; verify CLI aliases, exports, declarations and deterministic reports.
 - [ ] Verify candidate-specific fork/read-only CI isolation, SHA-pinned actions, least-privilege permissions, trusted publishing/OIDC provenance, tag ancestry and postpublish registry evidence as applicable; do not substitute tests of a different published version.
 
+## Post-publication verification (only after authorized release)
+
+- [ ] Independently confirm the actual npm registry version, dist-tags and provenance for the released package, not merely the local tarball or an earlier published version.
+- [ ] Install the **registry artifact** into an isolated external consumer with lifecycle scripts disabled; verify CLI aliases, TypeScript/library exports, reports, and exit-code behavior without executing analyzed hooks or commands.
+- [ ] Verify immutable Git tag and GitHub release point to the approved candidate SHA; reconcile release notes, package version and artifact identity.
+- [ ] Record remaining unverified real-provider runtime behavior and links to independent validation evidence; a passing source CI is not proof of runtime enforcement.
+
 RuleWitness-specific requirements: validate the locally packed npm artifact in an isolated offline consumer with lifecycle scripts disabled; preserve uncertainty/fail-closed behavior, CLI exit semantics and JSON compatibility; require explicit maintainer authorization before any npm publication. This checklist does not override stricter RuleWitness security and release instructions.
