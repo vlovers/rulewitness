@@ -1,5 +1,7 @@
 # Claude Code permission boundaries: trust, precedence, and coverage
 
+For the executable positive/negative model scenarios and explicit gaps, see the [Claude modeled conformance matrix](claude-conformance-matrix.md). This does **not** claim tests against the Claude Code executable.
+
 This is an **evidence/compatibility audit**, not a claim of runtime authorization conformance. RuleWitness v0.4's public evaluator compares a deliberately narrow **tracked project rule model**, not effective permission decisions of a live Claude Code session.
 
 Primary references (re-review when Claude Code changes):
