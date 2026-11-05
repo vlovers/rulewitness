@@ -50,13 +50,16 @@ export function checkGovernance(directory) {
       }
     }
     for (const match of contents.matchAll(
-      /(?<!!)\[[^\]\n]+\]\(([^\s)]+)(?:\s+"[^"]*")?\)/g,
+      /(?<!!)\[[^\]\n]+\]\((<[^>\n]*>|(?:\\.|[^)\n])+?)(?:\s+"[^"\n]*")?\)/g,
     )) {
-      const link = match[1];
-      if (/^(?:[a-z][\da-z+.-]*:|\/|#|\{|<)/i.test(link)) continue;
+      const raw = match[1];
+      const link = raw.startsWith("<") ? raw.slice(1, -1) : raw;
+      if (/^(?:[a-z][\da-z+.-]*:|\/|#|\{)/i.test(link)) continue;
       let target;
       try {
-        const decoded = decodeURIComponent(link.split("#")[0].split("?")[0]);
+        const decoded = decodeURIComponent(
+          link.split("#")[0].split("?")[0].replace(/\\([() ])/g, "$1"),
+        );
         if (!decoded) continue;
         target = resolve(root, dirname(name), decoded);
         if (!inside(root, target) || !inside(root, realpathSync(target))) {

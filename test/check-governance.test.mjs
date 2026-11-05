@@ -123,3 +123,33 @@ test("malformed percent escape in link fails closed", () =>
       /broken or unsafe local link/,
     );
   }));
+
+test("angle-bracket local traversal blocks", () =>
+  fixture((root) => {
+    writeFileSync(
+      join(root, "CLAUDE.md"),
+      "# Claude\n\n[AGENTS.md](AGENTS.md) [unsafe](<../../outside file.md>)\n",
+    );
+    assert.match(checkGovernance(root).join("\n"), /escapes repository/);
+  }));
+
+test("missing local link containing spaces blocks", () =>
+  fixture((root) => {
+    writeFileSync(
+      join(root, "CLAUDE.md"),
+      "# Claude\n\n[AGENTS.md](AGENTS.md) [missing](missing file.md)\n",
+    );
+    assert.match(checkGovernance(root).join("\n"), /missing file.md/);
+  }));
+
+test("escaped parentheses in local link are checked", () =>
+  fixture((root) => {
+    writeFileSync(
+      join(root, "CLAUDE.md"),
+      "# Claude\n\n[AGENTS.md](AGENTS.md) [missing](missing\\(file\\).md)\n",
+    );
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /broken or unsafe local link/,
+    );
+  }));
