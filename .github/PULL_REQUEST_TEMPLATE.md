@@ -31,6 +31,15 @@ Record exact commands, results, and CI links. An unchecked or unrun command is n
 
 CI run links, exact head SHA, and known failures:
 
+## Semantic and supply-chain evidence
+
+- Claude configured-rule coverage and unsupported cases:
+- Experimental Codex configured-posture coverage and limitations (not effective authorization):
+- `complete: false`, unknown/fail-closed behavior, report schema/version and exit `0/1/2/3` impact:
+- Untrusted Git reads, fork CI, credentials and non-execution guarantees:
+- Independent semantic oracle / negative regression evidence:
+- Packed npm consumer, CLI aliases, exports/declarations, lifecycle scripts disabled (or N/A reason):
+
 ## RuleWitness-specific safety
 
 - [ ] Matcher/provider changes include an independent oracle regression in `test/independent-witness.test.ts`, with unknown/fail-closed behavior and exit code `3` covered where relevant.
