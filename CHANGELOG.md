@@ -2,9 +2,9 @@
 
 All notable changes are documented here. Entries marked **Unreleased** describe repository code, not a published npm version.
 
-## 0.4.0-rc.3 — prepared, NOT published
+## 0.4.0-rc.3 — GitHub prerelease published; npm availability unverified
 
-This release candidate packages the changes merged after immutable `0.4.0-rc.2`. It remains an experimental prerelease and does not establish effective runtime permissions for Claude Code or Codex.
+The [GitHub prerelease](https://github.com/vlovers/rulewitness/releases/tag/v0.4.0-rc.3) was published at source commit `e0b110b17ca762e3ff1c4a99b5f5bba6f200cba0`. The recorded npm consumer verification in [PR #81](https://github.com/vlovers/rulewitness/pull/81) failed with `E404`, so npm publication must be verified separately before claiming package availability. This source release candidate packages the changes merged after immutable `0.4.0-rc.2`. It remains an experimental prerelease and does not establish effective runtime permissions for Claude Code or Codex.
 
 ### Compatibility and security
 
