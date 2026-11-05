@@ -77,6 +77,16 @@ Allowed statuses: `planned` → `claimed` → `in progress` → `in review` → 
 
 For each PR, record the immutable base/head SHA pair used by the review, actual test commands and result, CI run URL, independent reviewer and unresolved findings. A newer head invalidates stale evidence for material changes. If recovery follows an interrupted agent run, inspect the actual Git status/commit/PR before reusing its claimed status; **never replay a write blindly**.
 
+## Evidence artifacts, retention and redaction
+
+The parent Issue and integration PR are the **index**, not an unlimited storage location. For every retained verification artifact, record its producer/owner, command and environment, exact base/head/tested SHA, outcome (PASS / FAIL / NOT RUN / N/A), CI run URL or sanitized local path, creation time, retention or expiry, and a reproduction procedure. Do not equate a successful upload with a passing test. Prefer compact machine-readable summaries and reproducible commands over large raw logs; use the repository's existing artifact retention policy rather than inventing a universal duration.
+
+- Keep only sanitized evidence. Never attach access tokens, private repository contents, user data, Git credentials, untrusted command output containing secrets, or raw traces of analyzed settings/hooks. RuleWitness models provider configuration; **never execute** those analyzed commands or lifecycle scripts to collect evidence.
+- Scope artifacts to the Issue/PR and exact revision. Distinguish independent semantic-oracle output, unit/package/consumer checks, and modeled permission findings. A modeled ALLOW is not actual authorization, and an experimental provider inventory is not conformance evidence.
+- Record whether evidence came from a real isolated test run, a mock, a static review, or an external CI job. State skipped or unavailable evidence explicitly; no fabricated screenshots, log excerpts, check results or approvals.
+- After a material code/configuration change or rebase, revalidate affected evidence on the new effective revision. If a CI artifact has expired, been deleted, or cannot be verified against its SHA, mark it **UNAVAILABLE / NOT VERIFIED** and document safe reproduction; do not reuse its former PASS status as current proof.
+- On interruption, recover from authoritative GitHub branch, PR, Issue and CI state before replaying any write. Preserve conflicting agent worktrees and name one integration owner. Sanitized handoff notes may point to expiring artifacts but must remain understandable after expiry.
+
 ## Fail-closed conflict and recovery rules
 
 - Conflicting working changes: stop; preserve both branches; assign an integration owner; rebase/merge only after agreement and revalidation.
@@ -105,6 +115,8 @@ Changed paths and migration/compatibility considerations:
 
 Command / environment / exit status:
 CI workflow URL and status:
+Evidence artifacts (owner, exact SHA, sanitized path/URL, retention/expiry, reproduction):
+Expired/unavailable evidence and revalidation needed:
 Negative/fail-closed cases:
 Unrun checks with reason:
 
