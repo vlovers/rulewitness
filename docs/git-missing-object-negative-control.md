@@ -23,6 +23,9 @@ The tests verify:
   checkout HEAD policy.
 - A genuinely absent tracked file is distinguishable from a corrupt/incomplete
   object graph.
+- A missing real Git tree fails before provider discovery, without producing
+  success JSON or treating the configuration as absent.
+- A corrupt loose Git blob fails conservatively without leaking fixture content.
 - CLI compare operations fail with exit code **2**, without success JSON.
 - The Git HEAD, worktree status and index do not change through failed reads.
 - Error messages are generic and do not print contents of the source settings.

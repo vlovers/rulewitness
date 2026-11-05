@@ -234,3 +234,52 @@ test("a truly absent tracked policy is distinct from a missing referenced Git ob
     f.close();
   }
 });
+
+test("a missing real Git tree fails closed before provider discovery", () => {
+  const f = fixture();
+  try {
+    const head = f.commit(
+      ".claude/settings.json",
+      '{"permissions":{"allow":["Bash(npm test)"]}}',
+    );
+    const tree = f.git("rev-parse", `${head}^{tree}`);
+    assert.match(tree, /^[0-9a-f]{40}$/);
+    const treePath = join(f.root, ".git", "objects", tree.slice(0, 2), tree.slice(2));
+    assert.ok(existsSync(treePath));
+    rmSync(treePath);
+    assert.throws(() => readPolicy(f.root, head), /Read-only Git operation failed/);
+    assert.throws(
+      () => readTrackedProviderSnapshot(f.root, head),
+      /Read-only Git operation failed/,
+    );
+    const result = cliResult(f.root, "compare", head, head, "--json");
+    assert.equal(result.status, 2, result.stderr);
+    assert.equal(result.stdout, "");
+    assert.equal(f.git("rev-parse", "HEAD"), head);
+  } finally {
+    f.close();
+  }
+});
+
+test("a corrupt tracked Git blob fails closed without leaking its contents", () => {
+  const f = fixture();
+  try {
+    const base = f.commit("README.md", "Security fixture");
+    const head = f.commit(
+      ".claude/settings.json",
+      '{"permissions":{"allow":["Bash(secret-fixture-command)"]}}',
+    );
+    const blob = f.git("rev-parse", `${head}:.claude/settings.json`);
+    const blobPath = join(f.root, ".git", "objects", blob.slice(0, 2), blob.slice(2));
+    assert.ok(existsSync(blobPath));
+    writeFileSync(blobPath, "corrupt-object-bytes");
+    assert.throws(() => readPolicy(f.root, head), /Read-only Git operation failed/);
+    const result = cliResult(f.root, "compare", base, head, "--json");
+    assert.equal(result.status, 2, result.stderr);
+    assert.equal(result.stdout, "");
+    assert.ok(!result.stderr.includes("secret-fixture-command"));
+    assert.equal(f.git("rev-parse", "HEAD"), head);
+  } finally {
+    f.close();
+  }
+});
