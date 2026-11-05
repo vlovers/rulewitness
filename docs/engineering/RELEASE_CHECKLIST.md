@@ -11,4 +11,4 @@ This checklist is a gate, **not authorization** to release.
 - [ ] Obtain explicit maintainer authorization before merge, package publication or deployment.
 - [ ] After authorized release, verify the actual published artifact or deployment independently; record SHA, version, evidence and unresolved follow-ups.
 
-Special requirements: RuleWitness requires offline package-consumer validation and no automated npm publication; MutationBoundary requires isolated PostgreSQL checks and redacted diagnostics; Estima requires tenant/authorization and migration checks; Last Chapter requires narrative regression and Ukrainian-language review. Do not treat this cross-project list as a replacement for stricter local instructions.
+RuleWitness-specific requirements: validate the locally packed npm artifact in an isolated offline consumer with lifecycle scripts disabled; preserve uncertainty/fail-closed behavior, CLI exit semantics and JSON compatibility; require explicit maintainer authorization before any npm publication. This checklist does not override stricter RuleWitness security and release instructions.
