@@ -138,6 +138,23 @@ test("experimental v2 Codex records a configured change, never permission escala
   assert.deepEqual(JSON.parse(JSON.stringify(result)), result);
 });
 
+test("experimental v2 Codex accepts equivalent evidence with reordered object keys", () => {
+  const { comparison, review } = codex(knownToml, broaderToml);
+  const reorderedPosture = Object.fromEntries(
+    Object.entries(comparison.posture).reverse(),
+  ) as typeof comparison.posture;
+  const reorderedReview = Object.fromEntries(
+    Object.entries(review).reverse(),
+  ) as typeof review;
+  const result = createExperimentalCodexEnvelope(
+    { ...comparison, posture: reorderedPosture },
+    { ...reorderedReview, comparison: reorderedPosture },
+  );
+  assert.equal(result.outcome, "configured-change");
+  assert.equal(result.runtimeVerified, false);
+  assert.equal(result.runtimePermissionDiff, false);
+});
+
 test("experimental v2 Codex differentiates unchanged and unknown posture", () => {
   const unchanged = codex(knownToml, knownToml);
   const known = createExperimentalCodexEnvelope(
@@ -161,12 +178,18 @@ test("experimental v2 Codex refuses spoofed runtime claims and mismatched eviden
     [{ ...comparison, runtimePermissionDiff: true }, review],
     [comparison, { ...review, runtimeVerified: true }],
     [comparison, { ...review, runtimePermissionDiff: true }],
-    [comparison, { ...review, comparison: { ...review.comparison, changes: [] } }],
+    [
+      comparison,
+      { ...review, comparison: { ...review.comparison, changes: [] } },
+    ],
     [comparison, { ...review, provider: "claude-code" }],
     [comparison, { ...review, direction: "unchanged" }],
     [{ ...comparison, uncertain: true }, review],
     [{ ...comparison, posture: { ...comparison.posture, changes: [] } }, review],
-    [{ ...comparison, before: { ...comparison.before, path: "../secret" } }, review],
+    [
+      { ...comparison, before: { ...comparison.before, path: "../secret" } },
+      review,
+    ],
   ] as const;
   for (const [invalidComparison, invalidReview] of failures) {
     assert.throws(

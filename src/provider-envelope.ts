@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from "node:util";
 import { comparisonOutcome } from "./explain.ts";
 import { reviewCodexPosture } from "./codex-posture-review.ts";
 import { compareCodexPosture } from "./codex-posture.ts";
@@ -109,10 +110,16 @@ export function createExperimentalCodexEnvelope(
       comparison.after.revision,
     ]) ||
     !Array.isArray(review.unresolved) ||
-    !["unknown", "unchanged", "mixed", "broader-configured-sandbox",
-      "narrower-configured-sandbox", "fewer-approval-prompts",
-      "more-approval-prompts"].includes(review.direction) ||
-    JSON.stringify(comparison.posture) !== JSON.stringify(review.comparison)
+    ![
+      "unknown",
+      "unchanged",
+      "mixed",
+      "broader-configured-sandbox",
+      "narrower-configured-sandbox",
+      "fewer-approval-prompts",
+      "more-approval-prompts",
+    ].includes(review.direction) ||
+    !isDeepStrictEqual(comparison.posture, review.comparison)
   )
     throw new Error("Invalid or inconsistent Codex configured-posture evidence");
 
@@ -139,8 +146,8 @@ export function createExperimentalCodexEnvelope(
       (expectedPosture.uncertain ||
         !comparison.before.present ||
         !comparison.after.present) ||
-    JSON.stringify(comparison.posture) !== JSON.stringify(expectedPosture) ||
-    JSON.stringify(review) !== JSON.stringify(expectedReview)
+    !isDeepStrictEqual(comparison.posture, expectedPosture) ||
+    !isDeepStrictEqual(review, expectedReview)
   )
     throw new Error("Invalid or inconsistent Codex configured-posture evidence");
 
