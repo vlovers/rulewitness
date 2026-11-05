@@ -163,6 +163,9 @@ test("experimental v2 Codex refuses spoofed runtime claims and mismatched eviden
     [comparison, { ...review, runtimePermissionDiff: true }],
     [comparison, { ...review, comparison: { ...review.comparison, changes: [] } }],
     [comparison, { ...review, provider: "claude-code" }],
+    [comparison, { ...review, direction: "unchanged" }],
+    [{ ...comparison, uncertain: true }, review],
+    [{ ...comparison, posture: { ...comparison.posture, changes: [] } }, review],
     [{ ...comparison, before: { ...comparison.before, path: "../secret" } }, review],
   ] as const;
   for (const [invalidComparison, invalidReview] of failures) {
