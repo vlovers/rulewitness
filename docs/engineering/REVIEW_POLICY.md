@@ -4,11 +4,10 @@ Every change requires an independent assessment of the actual base-to-head diff,
 
 Record the reviewer, reviewed head SHA, scope, evidence, and each finding with severity, concrete failure scenario and resolution. Security/correctness findings of high severity block acceptance. Material changes after review require a fresh review or documented revalidation. A green CI run is not a substitute for independent review.
 
-Project-specific focus:
+RuleWitness review focus:
 
-- RuleWitness: independent permission oracle, unknown-vs-allow semantics, provider conformance limits, package safety.
-- MutationBoundary: isolated PostgreSQL, no leaked row values or credentials, negative mutation cases.
-- Estima: tenant isolation, atomic authorization/mutations, JWT lifecycle, migrations.
-- Last Chapter: narrative knowledge boundaries, deterministic flags/consequences, Ukrainian copy, asset provenance.
+- Validate the independent permission oracle and supported-versus-unknown behavior, including fail-closed uncertainty and exit-code precedence.
+- Check report schema and package compatibility, installed CLI consumers and provider-conformance limits.
+- Confirm analyzed hooks and commands never execute, Git operations remain read-only, and reports/logs do not disclose private permission data.
 
 No reviewer may silently merge, deploy, publish or weaken security settings without explicit maintainer authorization.
