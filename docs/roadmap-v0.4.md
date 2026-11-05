@@ -1,6 +1,10 @@
 # RuleWitness v0.4 — proposed roadmap
 
-Status: **in progress; v0.4.0-rc.2 prerelease published**. See [release readiness](release-readiness-v0.4.md) and [unreleased changelog](../CHANGELOG.md). Stable baseline: v0.3.0; v0.4.0-rc.2 is an opt-in npm `next` prerelease, not stable v0.4.0. Published-package Git fixtures passed in [PR #61](https://github.com/vlovers/rulewitness/pull/61), and the consumer shell-gate E2E passed in [PR #63](https://github.com/vlovers/rulewitness/pull/63); [real consumer A/B/C PR validation](codex-consumer-validation.md) passed expected exit behavior on 2026-10-22; fork and missing-object tests remain outstanding. Nothing in this plan expands the existing Claude Code runtime claims. [v0.3 roadmap](roadmap-v0.3.md) is retained as historical release planning.
+Status as checked 2026-11-05: **in progress, stable v0.4.0 not approved**. The [GitHub prerelease v0.4.0-rc.3](https://github.com/vlovers/rulewitness/releases/tag/v0.4.0-rc.3) exists at commit `e0b110b17ca762e3ff1c4a99b5f5bba6f200cba0`; its **npm publication is unverified** (the recorded npm-consumer run in [PR #81](https://github.com/vlovers/rulewitness/pull/81) failed with E404). The last separately verified npm prerelease was `0.4.0-rc.2`; the independently verified stable baseline is `0.3.0`. Do not assume current dist-tags without a new registry check.
+
+Phase 1 consumer evidence is recorded in [docs/codex-consumer-validation.md](codex-consumer-validation.md): real PR changes, unsupported syntax, unchanged config and an external fork PR were exercised. The missing-object negative control deliberately supplied an invalid SHA; a naturally incomplete checkout has **not** been reproduced. These tests do not establish effective Codex runtime permissions.
+
+See [release readiness](release-readiness-v0.4.md), [Claude runtime boundaries](claude-runtime-boundaries.md) and [changelog](../CHANGELOG.md). The [v0.3 roadmap](roadmap-v0.3.md) is historical.
 
 ## Goal
 
