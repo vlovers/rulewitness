@@ -228,12 +228,7 @@ test("Claude context and source assertions never become runtime verification", (
     permissionMode: "default",
     externalInfluences: "none",
   } as const;
-  const modeled = evaluateWithContext(
-    snapshot,
-    "Bash",
-    "npm test",
-    context,
-  );
+  const modeled = evaluateWithContext(snapshot, "Bash", "npm test", context);
   assert.equal(modeled.contextual.decision, "ALLOW");
   assert.equal(modeled.runtimeVerified, false);
   const sourceAware = evaluateWithSources(
