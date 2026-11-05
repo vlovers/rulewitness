@@ -1,4 +1,6 @@
 import { comparisonOutcome } from "./explain.ts";
+import { reviewCodexPosture } from "./codex-posture-review.ts";
+import { compareCodexPosture } from "./codex-posture.ts";
 import type { CodexPostureReview } from "./codex-posture-review.ts";
 import type { TrackedCodexPostureComparison } from "./codex-git.ts";
 import type { ComparisonOutcome, Report } from "./types.ts";
@@ -111,6 +113,34 @@ export function createExperimentalCodexEnvelope(
       "narrower-configured-sandbox", "fewer-approval-prompts",
       "more-approval-prompts"].includes(review.direction) ||
     JSON.stringify(comparison.posture) !== JSON.stringify(review.comparison)
+  )
+    throw new Error("Invalid or inconsistent Codex configured-posture evidence");
+
+  // Cross-check the caller-provided objects against independent recomputation.
+  // A JavaScript caller can forge TS types, a direction, or an uncertainty flag.
+  // No supplied configured-posture assertion is treated as runtime truth.
+  let expectedPosture: typeof comparison.posture;
+  let expectedReview: CodexPostureReview;
+  try {
+    expectedPosture = compareCodexPosture(
+      comparison.before.posture,
+      comparison.after.posture,
+    );
+    expectedReview = reviewCodexPosture(
+      comparison.before.posture,
+      comparison.after.posture,
+    );
+  } catch {
+    throw new Error("Invalid or inconsistent Codex configured-posture evidence");
+  }
+  if (
+    typeof comparison.uncertain !== "boolean" ||
+    comparison.uncertain !==
+      (expectedPosture.uncertain ||
+        !comparison.before.present ||
+        !comparison.after.present) ||
+    JSON.stringify(comparison.posture) !== JSON.stringify(expectedPosture) ||
+    JSON.stringify(review) !== JSON.stringify(expectedReview)
   )
     throw new Error("Invalid or inconsistent Codex configured-posture evidence");
 
