@@ -1,6 +1,6 @@
 # Agent working agreement — rulewitness
 
-Applies to this repository. Read the README and relevant local documentation before changes; more-specific scoped instructions may add requirements but cannot relax security gates.
+Applies to this repository. Before changes, read [README.md](README.md), [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), the current [release-readiness audit](docs/release-readiness-v0.4.md), and the linked Issue. More-specific scoped instructions may add requirements but cannot relax security gates.
 
 ## Project boundaries
 
