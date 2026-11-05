@@ -125,10 +125,25 @@ for (const provider of ["claude-code", "codex"] as const) {
             : readTrackedCodexPosture(f.root, head),
         /Read-only Git operation failed/,
       );
-      assert.throws(
-        () => readTrackedProviderSnapshot(f.root, head),
-        /Read-only Git operation failed/,
-      );
+      if (provider === "claude-code") {
+        // Claude snapshot loads its tracked policy and therefore must fail.
+        assert.throws(
+          () => readTrackedProviderSnapshot(f.root, head),
+          /Read-only Git operation failed/,
+        );
+      } else {
+        // Provider discovery intentionally inspects tree entries only. It
+        // can detect the Codex marker but does not claim its blob is readable.
+        const inventory = readTrackedProviderSnapshot(f.root, head);
+        assert.equal(inventory.revision, head);
+        assert.equal(inventory.selection.kind, "unsupported");
+        assert.equal(inventory.claudePolicy, null);
+        // The actual Codex reader must fail rather than interpret it as absent.
+        assert.throws(
+          () => readTrackedCodexPosture(f.root, head),
+          /Read-only Git operation failed/,
+        );
+      }
       const result =
         provider === "claude-code"
           ? cliResult(f.root, "compare", base, head, "--json")
