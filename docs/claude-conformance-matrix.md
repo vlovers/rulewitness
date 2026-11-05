@@ -15,18 +15,18 @@ Reference material (re-check upstream semantics before promoting any case):
 
 ## Model assertions exercised by executable tests
 
-| Scenario | Expected configured-rule result | Evidence boundary |
-| --- | --- | --- |
-| Matching deny, ask and allow | `DENY` | Parser and evaluator precedence, not runtime precedence |
-| Matching ask and allow | `ASK` | Supported rule subset |
-| Exact Bash allow | `ALLOW` | Conditional rule match only |
-| Bare prefix of trailing ` *` wildcard | `ALLOW` | RuleWitness's documented normalized model |
-| Supported allow `:*` alias | `ALLOW` | Syntax normalization, not shell equivalence |
-| Unmatched Bash | `UNKNOWN` | No assumed shell/runtime default |
-| No rule for WebSearch | `ASK` | Assumed manual/default mode only |
-| Explicit bare WebSearch rule | `ALLOW` | Project rule match, not tool execution |
-| Unknown tool | `UNKNOWN` | No fictional provider support |
-| Documented `manual` alias | Existing modeled rule decision | Does not prove the active session mode |
+| Scenario                              | Expected configured-rule result | Evidence boundary                                       |
+| ------------------------------------- | ------------------------------- | ------------------------------------------------------- |
+| Matching deny, ask and allow          | `DENY`                          | Parser and evaluator precedence, not runtime precedence |
+| Matching ask and allow                | `ASK`                           | Supported rule subset                                   |
+| Exact Bash allow                      | `ALLOW`                         | Conditional rule match only                             |
+| Bare prefix of trailing ` *` wildcard | `ALLOW`                         | RuleWitness's documented normalized model               |
+| Supported allow `:*` alias            | `ALLOW`                         | Syntax normalization, not shell equivalence             |
+| Unmatched Bash                        | `UNKNOWN`                       | No assumed shell/runtime default                        |
+| No rule for WebSearch                 | `ASK`                           | Assumed manual/default mode only                        |
+| Explicit bare WebSearch rule          | `ALLOW`                         | Project rule match, not tool execution                  |
+| Unknown tool                          | `UNKNOWN`                       | No fictional provider support                           |
+| Documented `manual` alias             | Existing modeled rule decision  | Does not prove the active session mode                  |
 
 ## Fail-closed cases
 
@@ -48,16 +48,16 @@ A secret-looking value in an unsupported setting must not appear in diagnostics.
 
 ## What remains unverified against the actual agent
 
-| Native behavior | RuleWitness guarantee |
-| --- | --- |
-| Managed, command-line, user, project and local precedence | No runtime source-merging guarantee |
-| Project trust or `/status` output | Not derivable from Git revisions |
-| Dynamically approved tools and session overrides | Not inspected |
-| Hook execution and tool-specific conditions | Unsupported, unresolved |
-| Bash parser, quoting, substitutions, wrappers and real shell expansions | Deliberately bounded rule syntax |
-| Built-in approvals and runtime execution enforcement | Not proven |
-| Permission changes outside tracked Git files | Not observable by Git-only comparison |
-| Native Claude Code versions and cloud/desktop differences | No independently verified version-to-version conformance |
+| Native behavior                                                         | RuleWitness guarantee                                    |
+| ----------------------------------------------------------------------- | -------------------------------------------------------- |
+| Managed, command-line, user, project and local precedence               | No runtime source-merging guarantee                      |
+| Project trust or `/status` output                                       | Not derivable from Git revisions                         |
+| Dynamically approved tools and session overrides                        | Not inspected                                            |
+| Hook execution and tool-specific conditions                             | Unsupported, unresolved                                  |
+| Bash parser, quoting, substitutions, wrappers and real shell expansions | Deliberately bounded rule syntax                         |
+| Built-in approvals and runtime execution enforcement                    | Not proven                                               |
+| Permission changes outside tracked Git files                            | Not observable by Git-only comparison                    |
+| Native Claude Code versions and cloud/desktop differences               | No independently verified version-to-version conformance |
 
 Current Claude Code docs describe managed policy and multiple non-repository
 setting sources, so a two-commit comparison cannot establish the effective
