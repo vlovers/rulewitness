@@ -13,4 +13,4 @@ A change is **implemented** when the agreed scope exists, **verified** when rele
 - Independent reviewer records identity, reviewed head SHA, findings and disposition. AI review is not authorized GitHub approval. Re-review material changes and resolve blocking findings.
 - Docs describe actual supported/unsupported behavior. A green CI run does not prove real Claude/Codex runtime conformance.
 
-Docs-only changes may mark irrelevant runtime tests N/A with a reason; verify changed links and command references. Publishing requires the separate release checklist and explicit maintainer authorization.
+Docs-only changes may mark irrelevant runtime tests N/A with a reason; leave those PR checkboxes unchecked rather than treating N/A as a pass. Verify changed links and command references. At issue creation, SHA and CI evidence are planned fields; record actual revision and results at handoff. Publishing requires the separate release checklist and explicit maintainer authorization.

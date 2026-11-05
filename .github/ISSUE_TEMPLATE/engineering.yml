@@ -38,7 +38,7 @@ body:
     id: verification
     attributes:
       label: Verification plan
-      description: "List actual repository-specific commands, negative/security cases, exact head SHA, required CI and independent reviewer. Never claim pending CI passed."
+      description: "At issue creation, list planned commands, negative/security cases, required CI and proposed independent reviewer. At handoff, record the actual head SHA, executed commands and CI results. Never claim pending CI passed."
     validations:
       required: true
   - type: textarea

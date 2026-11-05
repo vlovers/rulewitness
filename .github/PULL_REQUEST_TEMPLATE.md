@@ -19,7 +19,7 @@ Follow [multi-agent workflow](../docs/engineering/MULTI_AGENT_WORKFLOW.md); a co
 
 ## Verification evidence
 
-Record exact commands, results, and CI links. An unchecked or unrun command is not passing; explain N/A.
+Record exact commands, results, and CI links. Check a command only if it actually passed on the recorded revision. For docs-only or other narrowly scoped changes, leave irrelevant runtime/package commands unchecked and write `N/A — <reason>` below; do not run expensive unrelated suites solely to fill checkboxes.
 
 - [ ] `npm run typecheck`
 - [ ] `npm test`
@@ -29,7 +29,7 @@ Record exact commands, results, and CI links. An unchecked or unrun command is n
 - [ ] `npm pack --dry-run`
 - [ ] Relevant negative/failure-path regression tests
 
-CI run links, exact head SHA, and known failures:
+CI run links, exact head SHA, known failures, and per-command N/A reasons:
 
 ## Semantic and supply-chain evidence
 
