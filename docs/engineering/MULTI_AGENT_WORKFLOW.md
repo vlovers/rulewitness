@@ -7,6 +7,7 @@ This document defines how multiple independent coding agents collaborate on one 
 Prefer a **coherent outcome** over a high count of trivial PRs. A batch is a complete user-visible capability, correctness invariant, or independently verifiable engineering milestone, including its implementation, regression cases, documentation, and evidence. Do not split changes solely to create more PRs.
 
 Each work item must have:
+
 - A GitHub Issue (or a tracked parent issue with named subtasks) and a designated accountable owner.
 - A clear outcome, explicit non-goals, observable acceptance criteria, risk level, and evidence requirements.
 - Paths or subsystems it is expected to modify, known dependencies, and likely conflict owners.
@@ -89,27 +90,32 @@ For each PR, record the immutable base/head SHA pair used by the review, actual 
 
 ```markdown
 ### Outcome
-Issue: #...  | PR: #... | Owner: ...
+
+Issue: #... | PR: #... | Owner: ...
 Acceptance criteria completed:
 Non-goals / changes intentionally deferred:
 
 ### Exact revision
+
 Base branch + SHA:
 Head branch + SHA:
 Changed paths and migration/compatibility considerations:
 
 ### Verification
+
 Command / environment / exit status:
 CI workflow URL and status:
 Negative/fail-closed cases:
 Unrun checks with reason:
 
 ### Review and risk
+
 Independent reviewer / reviewed head SHA:
 Blocking findings + disposition:
 Security, data, package and rollback notes:
 
 ### Next decision
+
 Blocked on / next owner:
 Maintainer approval needed for merge or release: yes/no
 ```
