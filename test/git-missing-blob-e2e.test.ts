@@ -73,7 +73,13 @@ function fixture(): Fixture {
     const object = git("rev-parse", `${revision}:${path}`);
     assert.match(object, /^[0-9a-f]{40}$/);
     assert.equal(git("cat-file", "-t", object), "blob");
-    const objectPath = join(root, ".git", "objects", object.slice(0, 2), object.slice(2));
+    const objectPath = join(
+      root,
+      ".git",
+      "objects",
+      object.slice(0, 2),
+      object.slice(2),
+    );
     assert.ok(existsSync(objectPath), "Fixture requires a loose blob");
     rmSync(objectPath);
     assert.equal(existsSync(objectPath), false);
@@ -149,7 +155,11 @@ for (const provider of ["claude-code", "codex"] as const) {
           ? cliResult(f.root, "compare", base, head, "--json")
           : cliResult(f.root, "codex-posture", base, head, "--json");
       assert.equal(result.status, 2, result.stderr);
-      assert.equal(result.stdout, "", "No incomplete or false pass JSON report");
+      assert.equal(
+        result.stdout,
+        "",
+        "No incomplete or false pass JSON report",
+      );
       assert.ok(!result.stderr.includes("Security fixture"));
       assert.ok(!result.stderr.includes("on-request"));
       assert.equal(f.git("rev-parse", "HEAD"), currentHead);
@@ -178,8 +188,19 @@ test("a missing historical Claude blob cannot silently reuse the present HEAD po
     assert.equal(currentPolicy.revision, next);
     f.removeBlob(old, ".claude/settings.json");
     assert.equal(readPolicy(f.root, next).revision, next);
-    assert.throws(() => readPolicy(f.root, old), /Read-only Git operation failed/);
-    const result = cliResult(f.root, "compare", old, next, "--json", "--fail-on", "high");
+    assert.throws(
+      () => readPolicy(f.root, old),
+      /Read-only Git operation failed/,
+    );
+    const result = cliResult(
+      f.root,
+      "compare",
+      old,
+      next,
+      "--json",
+      "--fail-on",
+      "high",
+    );
     assert.equal(result.status, 2, result.stderr);
     assert.equal(result.stdout, "");
     assert.equal(f.git("rev-parse", "HEAD"), expectedHead);
