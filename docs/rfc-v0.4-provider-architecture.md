@@ -1,6 +1,6 @@
 # RFC: RuleWitness v0.4 provider architecture
 
-Status: **proposal for review**, not implemented. Baseline: published v0.3.0. This RFC does not claim support for any provider other than the documented Claude Code subset.
+Status: **partially implemented, experimental**. Baseline: published stable v0.3.0. The internal bounded adapter and opt-in [provider analysis envelope](provider-envelope-experimental.md) exist; they do not establish a second semantic permission engine. This RFC does not claim effective authorization support for either agent.
 
 ## Current implementation inventory
 
@@ -54,7 +54,7 @@ For v0.4, recommend an explicit `--provider` for experimental adapters (in a fut
 
 ### Versioned report proposal
 
-A future envelope might contain `schemaVersion: 2`, `provider: { id, modelRevision }`, `scope`, `complete: false`, `revisions`, `diagnostics` and `findings`. This is **not** a schema commitment: decide the actual representation using golden snapshots and installed-package consumer tests. Schema v1 output and consumers must remain accessible under explicit compatibility rules. Evidence must carry exact commit and file provenance without reading secrets unrelated to the configured scope.
+An **experimental opt-in v2 envelope** now exists with a discriminated union: Claude wraps its unchanged JSON v1 `compare` report as `modeled-permission-decision-diff`; Codex wraps its limited tracked configured-posture review as `configured-posture-diff`. Both preserve `complete: false` and `runtimeVerified: false`. Codex always keeps `runtimePermissionDiff: false`. Exact consumer tarball and TypeScript discriminant tests accompany the implementation. This is **not a commitment to a future stable v2 schema**, nor an expansion of native permission conformance. See [API details and limitations](provider-envelope-experimental.md). Evidence must carry revision provenance without reading secrets unrelated to the configured scope.
 
 ## Threat model and rejection cases
 
