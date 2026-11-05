@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
 import {
+  chmodSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -272,6 +273,8 @@ test("a corrupt tracked Git blob fails closed without leaking its contents", () 
     const blob = f.git("rev-parse", `${head}:.claude/settings.json`);
     const blobPath = join(f.root, ".git", "objects", blob.slice(0, 2), blob.slice(2));
     assert.ok(existsSync(blobPath));
+    // Git writes loose objects read-only; allow deliberate corruption in this fixture.
+    chmodSync(blobPath, 0o600);
     writeFileSync(blobPath, "corrupt-object-bytes");
     assert.throws(() => readPolicy(f.root, head), /Read-only Git operation failed/);
     const result = cliResult(f.root, "compare", base, head, "--json");
