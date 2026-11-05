@@ -8,6 +8,8 @@ RuleWitness is an offline semantic permission-diff CLI/library. Never execute mo
 
 ## Existing project safeguards
 
+- Keep the scope of Claude configured-rule analysis separate from experimental Codex configured-posture inventory; neither is proof of effective provider permissions. Preserve `complete: false`, unknown/unsupported fail-closed reporting, and CLI exit-code precedence including uncertainty exit `3`.
+- Read untrusted Git objects without mutating Git state or fetching remote revisions; never execute analyzed settings, hooks, commands or repository code. Preserve safe parsing bounds and read-only fork/CI behavior.
 - Preserve `schemaVersion` compatibility (or explicitly version breaking changes), document severity transitions, and extend the independent policy oracle in `test/independent-witness.test.ts` for matcher changes. Model correctness is not proof of installed-provider conformance.
 - Use Node.js 24 and the project-specific checks from `CONTRIBUTING.md`, including `npm run test:package`, `npm pack --dry-run` and `npm run format:check`. Do not execute analyzed hooks, settings, commands or lifecycle scripts; keep package-consumer tests offline and scripts disabled.
 - No automatic npm publishing or release; publication requires separate explicit authorization.
