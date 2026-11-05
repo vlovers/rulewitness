@@ -45,11 +45,17 @@ if (published) {
     typeof integrity !== "string" ||
     !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(integrity)
   ) {
-    throw new Error("Published rc.3 requires matching next tag and sha512 integrity");
+    throw new Error(
+      "Published rc.3 requires matching next tag and sha512 integrity",
+    );
   }
-  console.log("Registry state: published rc.3 verified, stable latest preserved");
+  console.log(
+    "Registry state: published rc.3 verified, stable latest preserved",
+  );
 } else {
   if (tags.next !== previousNext || integrity !== null)
-    throw new Error("Unpublished rc.3 must preserve previous next and have no integrity");
+    throw new Error(
+      "Unpublished rc.3 must preserve previous next and have no integrity",
+    );
   console.log("Registry state: unpublished rc.3, stable latest preserved");
 }
