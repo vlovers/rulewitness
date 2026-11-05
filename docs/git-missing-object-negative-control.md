@@ -18,7 +18,7 @@ The tests verify:
   error, rather than a missing-config interpretation or a partial JSON report.
 - A missing **head** Codex TOML blob raises an analysis error rather than an
   inferred safe posture or `runtimePermissionDiff: true`.
-- The provider snapshot reader also rejects either missing referenced blob.
+- The Claude provider snapshot reader rejects a missing referenced Claude blob. The Codex provider discovery API examines **tree metadata only** and can still identify the Codex marker; it never claims that the TOML content has been read or validated. The actual Codex posture reader rejects the missing blob.
 - A missing **base** Claude blob does not silently fall back to the valid
   checkout HEAD policy.
 - A genuinely absent tracked file is distinguishable from a corrupt/incomplete
