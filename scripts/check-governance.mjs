@@ -58,7 +58,10 @@ export function checkGovernance(directory) {
       let target;
       try {
         const decoded = decodeURIComponent(
-          link.split("#")[0].split("?")[0].replace(/\\([() ])/g, "$1"),
+          link
+            .split("#")[0]
+            .split("?")[0]
+            .replace(/\\([() ])/g, "$1"),
         );
         if (!decoded) continue;
         target = resolve(root, dirname(name), decoded);
