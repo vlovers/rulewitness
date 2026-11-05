@@ -1,6 +1,6 @@
 # RuleWitness v0.4 — proposed roadmap
 
-Status as checked 2026-11-05: **in progress, stable v0.4.0 not approved**. The [GitHub prerelease v0.4.0-rc.3](https://github.com/vlovers/rulewitness/releases/tag/v0.4.0-rc.3) exists at commit `e0b110b17ca762e3ff1c4a99b5f5bba6f200cba0`; its **npm publication is unverified** (the recorded npm-consumer run in [PR #81](https://github.com/vlovers/rulewitness/pull/81) failed with E404). The last separately verified npm prerelease was `0.4.0-rc.2`; the independently verified stable baseline is `0.3.0`. Do not assume current dist-tags without a new registry check.
+Status as checked 2026-11-05: **in progress, stable v0.4.0 not approved**. The [GitHub prerelease v0.4.0-rc.3](https://github.com/vlovers/rulewitness/releases/tag/v0.4.0-rc.3) exists at source commit `e0b110b17ca762e3ff1c4a99b5f5bba6f200cba0`. A later [read-only registry check (run 41952270676)](https://github.com/vlovers/rulewitness/actions/runs/41952270676), completed 2026-11-05 02:00 UTC on PR #87 commit `9f156a6818b99702abbdc51fe11f75009fc88a53`, verified that npm `rulewitness@0.4.0-rc.3` was published with a SHA-512 integrity value, `next` pointed to `0.4.0-rc.3`, and stable `latest` remained `0.3.0`. Earlier PR #81 returned `E404`; that is historical evidence, not the latest observation. This registry check and installed-package tests do not establish GitHub-tag-to-npm provenance or a final merged-main release approval. Recheck registry state before relying on current dist-tags.
 
 Phase 1 consumer evidence is recorded in [docs/codex-consumer-validation.md](codex-consumer-validation.md): real PR changes, unsupported syntax, unchanged config and an external fork PR were exercised. The missing-object negative control deliberately supplied an invalid SHA; a naturally incomplete checkout has **not** been reproduced. These tests do not establish effective Codex runtime permissions.
 
@@ -53,4 +53,4 @@ The [Claude runtime boundaries audit](claude-runtime-boundaries.md) documents wh
 
 ## Release gate
 
-No tag or npm publication until the code, docs, tests and package smoke checks pass and maintainer review is complete. Keep changes reviewable in dedicated PRs; never silently change v0.3 JSON v1, severity gates or exit statuses.
+No further tag, npm publication or dist-tag change until the code, docs, tests and package smoke checks pass and maintainer review is complete. Keep changes reviewable in dedicated PRs; never silently change v0.3 JSON v1, severity gates or exit statuses.
