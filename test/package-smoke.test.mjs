@@ -303,6 +303,7 @@ test("package: dry-run and actual tarball include only documented runtime and do
     "permission-sources",
     "pr-markdown",
     "provider-adapter",
+    "provider-envelope",
     "provider-discovery",
     "provider-snapshot",
     "report",
@@ -894,6 +895,46 @@ console.log("Stable v0.3.0 runtime exports available");`,
       env,
     }),
     /Stable v0\.3\.0 runtime exports available/,
+  );
+});
+
+test("package: experimental provider envelopes load from installed tarball", () => {
+  writeFileSync(
+    join(consumer, "verify-experimental-envelopes.mjs"),
+    `import {
+  parsePolicy, comparePolicies, createExperimentalClaudeEnvelope,
+  inspectCodexPosture, compareCodexPosture, reviewCodexPosture,
+  createExperimentalCodexEnvelope,
+} from "rulewitness";
+const first = parsePolicy("base", { ".claude/settings.json": JSON.stringify({ permissions: { ask: ["Bash(npm test)"] } }) });
+const second = parsePolicy("head", { ".claude/settings.json": JSON.stringify({ permissions: { allow: ["Bash(npm test)"] } }) });
+const claude = createExperimentalClaudeEnvelope(comparePolicies(first, second));
+if (claude.schemaVersion !== 2 || claude.analysisKind !== "modeled-permission-decision-diff" ||
+    claude.report.schemaVersion !== 1 || claude.outcome !== "modeled-change" || claude.runtimeVerified !== false)
+  throw new Error("Installed Claude envelope contract mismatch");
+const old = inspectCodexPosture('approval_policy = "on-request"\\nsandbox_mode = "read-only"');
+const next = inspectCodexPosture('approval_policy = "never"\\nsandbox_mode = "workspace-write"');
+const posture = compareCodexPosture(old, next);
+const comparison = {
+  schemaVersion: 1, provider: "codex", scope: "tracked-project-config-posture",
+  before: { revision: "a".repeat(40), path: ".codex/config.toml", present: true, posture: old },
+  after: { revision: "b".repeat(40), path: ".codex/config.toml", present: true, posture: next },
+  posture, uncertain: false, runtimePermissionDiff: false,
+};
+const codex = createExperimentalCodexEnvelope(comparison, reviewCodexPosture(old, next));
+if (codex.schemaVersion !== 2 || codex.analysisKind !== "configured-posture-diff" ||
+    codex.outcome !== "configured-change" || codex.runtimePermissionDiff !== false ||
+    codex.runtimeVerified !== false)
+  throw new Error("Installed Codex envelope contract mismatch");
+console.log("Installed experimental envelopes verified");`,
+  );
+  assert.match(
+    execFileSync(process.execPath, ["verify-experimental-envelopes.mjs"], {
+      cwd: consumer,
+      encoding: "utf8",
+      env,
+    }),
+    /Installed experimental envelopes verified/,
   );
 });
 
