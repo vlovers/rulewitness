@@ -12,6 +12,7 @@ Each finding needs severity, file/location, affected invariant, concrete reprodu
 
 RuleWitness review focus:
 
+- Verify `complete: false` remains explicit whenever provider coverage or analysis evidence is incomplete; unsupported/unknown results must never silently become ALLOW or a claim of complete runtime enforcement.
 - Validate the independent permission oracle and supported-versus-unknown behavior, including fail-closed uncertainty and exit-code precedence.
 - Check report schema and package compatibility, installed CLI consumers and provider-conformance limits.
 - Confirm analyzed hooks and commands never execute, Git operations remain read-only, and reports/logs do not disclose private permission data.
