@@ -8,8 +8,10 @@ CI pass.
 The executable regression suite
 [`test/git-missing-blob-e2e.test.ts`](../test/git-missing-blob-e2e.test.ts)
 constructs isolated, unnetworked disposable Git repositories, commits normal
-Claude and Codex settings, then removes the **actual loose blob** from the
-object database while leaving the commit and tree intact. It does not fake a
+Claude and Codex settings, then removes actual loose Git objects from the object database. Blob
+fixtures leave the commit and tree intact; separate fixtures remove the
+root tree, nested `.claude` tree, or commit itself. These are deliberately
+different failure boundaries. It does not fake a
 SHA, execute agent commands, set up a remote, or fetch missing content.
 
 The tests verify:
@@ -23,8 +25,14 @@ The tests verify:
   checkout HEAD policy.
 - A genuinely absent tracked file is distinguishable from a corrupt/incomplete
   object graph.
-- A missing real Git tree fails before provider discovery, without producing
+- A missing **root tree** fails before provider discovery, without producing
   success JSON or treating the configuration as absent.
+- A missing **nested `.claude` tree**, while the root tree and commit remain,
+  fails for Claude policy loading and provider discovery; the CLI returns
+  exit code **2**, no success JSON, and does not mutate HEAD, index or worktree.
+- A missing **Codex commit object** (while HEAD still names that SHA) fails
+  before tracked posture can be loaded; the CLI returns exit code **2**,
+  no success JSON, and diagnostics do not expose the TOML fixture.
 - A corrupt loose Git blob fails conservatively without leaking fixture content.
 - CLI compare operations fail with exit code **2**, without success JSON.
 - The Git HEAD, worktree status and index do not change through failed reads.
@@ -36,9 +44,13 @@ negative controls and the [Git object boundary tests](../test/git-object-boundar
 ## Scope of evidence
 
 These are **real missing-object Git fixtures** on a locally manufactured
-incomplete object graph. They do not prove that GitHub Actions checkout itself
+incomplete object graph. A missing commit is distinct from a nonexistent
+revision supplied by the caller, and a missing nested tree is distinct from
+a missing root tree. Neither distinction proves real hosted checkout behavior. They do not prove that GitHub Actions checkout itself
 will produce the same incomplete object graph under every shallow fetch,
-partial clone, Git version or fork workflow. The read-only Git reader uses
+partial clone, Git version or fork workflow. In particular, this suite does
+**not** construct a promisor remote or prove offline partial-clone behavior;
+that boundary remains unverified and must not be described as tested. The read-only Git reader uses
 `--no-lazy-fetch`, removes inherited `GIT_*` overrides, and does not run
 `git fetch`, `git checkout`, shell commands from policy files, or hooks.
 
