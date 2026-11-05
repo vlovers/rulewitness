@@ -12,8 +12,7 @@ import type { ComparisonOutcome, Report } from "./types.ts";
  * observation can never be represented as a permission-decision diff.
  */
 export type ExperimentalProviderEnvelope =
-  | ExperimentalClaudeComparisonEnvelope
-  | ExperimentalCodexPostureEnvelope;
+  ExperimentalClaudeComparisonEnvelope | ExperimentalCodexPostureEnvelope;
 
 interface EnvelopeBase {
   readonly schemaVersion: 2;
@@ -105,10 +104,7 @@ export function createExperimentalCodexEnvelope(
     !comparison.after ||
     comparison.before.path !== ".codex/config.toml" ||
     comparison.after.path !== ".codex/config.toml" ||
-    !validRevisions([
-      comparison.before.revision,
-      comparison.after.revision,
-    ]) ||
+    !validRevisions([comparison.before.revision, comparison.after.revision]) ||
     !Array.isArray(review.unresolved) ||
     ![
       "unknown",
@@ -121,7 +117,9 @@ export function createExperimentalCodexEnvelope(
     ].includes(review.direction) ||
     !isDeepStrictEqual(comparison.posture, review.comparison)
   )
-    throw new Error("Invalid or inconsistent Codex configured-posture evidence");
+    throw new Error(
+      "Invalid or inconsistent Codex configured-posture evidence",
+    );
 
   // Cross-check the caller-provided objects against independent recomputation.
   // A JavaScript caller can forge TS types, a direction, or an uncertainty flag.
@@ -138,7 +136,9 @@ export function createExperimentalCodexEnvelope(
       comparison.after.posture,
     );
   } catch {
-    throw new Error("Invalid or inconsistent Codex configured-posture evidence");
+    throw new Error(
+      "Invalid or inconsistent Codex configured-posture evidence",
+    );
   }
   if (
     typeof comparison.uncertain !== "boolean" ||
@@ -149,7 +149,9 @@ export function createExperimentalCodexEnvelope(
     !isDeepStrictEqual(comparison.posture, expectedPosture) ||
     !isDeepStrictEqual(review, expectedReview)
   )
-    throw new Error("Invalid or inconsistent Codex configured-posture evidence");
+    throw new Error(
+      "Invalid or inconsistent Codex configured-posture evidence",
+    );
 
   const uncertain = comparison.uncertain || review.direction === "unknown";
   return {

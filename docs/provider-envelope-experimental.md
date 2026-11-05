@@ -10,10 +10,10 @@ not published npm.
 
 RuleWitness now has two distinct analysis categories:
 
-| Provider | `analysisKind` | What is represented | What is NOT established |
-| --- | --- | --- | --- |
-| Claude Code | `modeled-permission-decision-diff` | A bounded semantic diff of supported tracked project rules, with replayable witnesses and the unchanged v1 report | Runtime-effective permissions, trust, managed/user settings, live approvals |
-| Codex | `configured-posture-diff` | Experimental differences in explicitly recognized tracked TOML sandbox/approval settings | Permission decisions for individual commands, actual sandbox enforcement, configuration precedence |
+| Provider    | `analysisKind`                     | What is represented                                                                                               | What is NOT established                                                                            |
+| ----------- | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Claude Code | `modeled-permission-decision-diff` | A bounded semantic diff of supported tracked project rules, with replayable witnesses and the unchanged v1 report | Runtime-effective permissions, trust, managed/user settings, live approvals                        |
+| Codex       | `configured-posture-diff`          | Experimental differences in explicitly recognized tracked TOML sandbox/approval settings                          | Permission decisions for individual commands, actual sandbox enforcement, configuration precedence |
 
 Both envelopes carry `schemaVersion: 2`, exact supplied revision identifiers,
 `complete: false`, and `runtimeVerified: false`. The Codex variant also has
@@ -45,9 +45,7 @@ const after = parsePolicy("head", {
     permissions: { allow: ["Bash(npm test)"] },
   }),
 });
-const claude = createExperimentalClaudeEnvelope(
-  comparePolicies(before, after),
-);
+const claude = createExperimentalClaudeEnvelope(comparePolicies(before, after));
 console.log(claude.analysisKind); // modeled-permission-decision-diff
 console.log(claude.report.schemaVersion); // 1: original report preserved
 

@@ -20,8 +20,7 @@ const claude = (revision: string, permissions: object) =>
   parsePolicy(revision, {
     [file]: JSON.stringify({ permissions }),
   });
-const knownToml =
-  'approval_policy = "on-request"\nsandbox_mode = "read-only"';
+const knownToml = 'approval_policy = "on-request"\nsandbox_mode = "read-only"';
 const broaderToml =
   'approval_policy = "never"\nsandbox_mode = "workspace-write"';
 
@@ -185,7 +184,10 @@ test("experimental v2 Codex refuses spoofed runtime claims and mismatched eviden
     [comparison, { ...review, provider: "claude-code" }],
     [comparison, { ...review, direction: "unchanged" }],
     [{ ...comparison, uncertain: true }, review],
-    [{ ...comparison, posture: { ...comparison.posture, changes: [] } }, review],
+    [
+      { ...comparison, posture: { ...comparison.posture, changes: [] } },
+      review,
+    ],
     [
       { ...comparison, before: { ...comparison.before, path: "../secret" } },
       review,
