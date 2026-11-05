@@ -92,7 +92,10 @@ test("symlinked required contract outside repository blocks", () =>
     const target = join(root, "docs/engineering/REVIEW_POLICY.md");
     rmSync(target);
     const external = join(outside, "REVIEW_POLICY.md");
-    writeFileSync(external, "# External review policy\n\nThis must not be trusted.\n");
+    writeFileSync(
+      external,
+      "# External review policy\n\nThis must not be trusted.\n",
+    );
     symlinkSync(external, target);
     assert.match(
       checkGovernance(root).join("\n"),
