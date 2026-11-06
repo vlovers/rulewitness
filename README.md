@@ -16,7 +16,7 @@ RuleWitness is an experimental, offline TypeScript CLI and library for reviewing
 
 This project evolved from AgentPermissionDiff in v0.2. Version v0.3 adds a reviewer-focused Markdown presentation, without expanding the permission model. The repository is [vlovers/rulewitness](https://github.com/vlovers/rulewitness), and `rulewitness@0.3.0` is [published on npm](https://www.npmjs.com/package/rulewitness/v/0.3.0). See [migration notes](docs/migration-v0.2.md), the [v0.2.0 release](https://github.com/vlovers/rulewitness/releases/tag/v0.2.0), and the [historical release preparation notes](docs/release-v0.2.0.md).
 
-The **v0.4.0-rc.2 prerelease** is published on [npm](https://www.npmjs.com/package/rulewitness/v/0.4.0-rc.2) under the `next` dist-tag; see [release notes](docs/release-v0.4.0-rc.2.md) for its experimental Codex posture commands and limitations. The stable `latest` release remains `0.3.0`. The **v0.4.0-rc.1 prerelease** is available on [GitHub](https://github.com/vlovers/rulewitness/releases/tag/v0.4.0-rc.1); it adds internal provider architecture and Git snapshot discovery without enabling Codex permission analysis. Stable examples still target v0.3.0. See [release-readiness audit](docs/release-readiness-v0.4.md), [changelog](CHANGELOG.md) and the [Claude runtime boundaries audit](docs/claude-runtime-boundaries.md).
+The **v0.4.0-rc.3 GitHub prerelease** exists at source commit `e0b110b17ca762e3ff1c4a99b5f5bba6f200cba0`. A later [read-only registry check (run 41952270676)](https://github.com/vlovers/rulewitness/actions/runs/41952270676), completed 2026-11-05 02:00 UTC on PR #87 commit `9f156a6818b99702abbdc51fe11f75009fc88a53`, verified that npm `rulewitness@0.4.0-rc.3` was published with a SHA-512 integrity value, `next` pointed to `0.4.0-rc.3`, and stable `latest` remained `0.3.0`. Earlier PR #81 returned `E404`; that is historical evidence, not the latest observation. This registry check and installed-package tests do not establish GitHub-tag-to-npm provenance or a final merged-main release approval. Recheck registry state before relying on current dist-tags. See [rc.2 release notes](docs/release-v0.4.0-rc.2.md) for experimental Codex limitations. Stable examples still target v0.3.0. See [release-readiness audit](docs/release-readiness-v0.4.md), [changelog](CHANGELOG.md) and the [Claude runtime boundaries audit](docs/claude-runtime-boundaries.md).
 
 For TypeScript integrations that need to track explicit live-session assumptions without claiming runtime authorization, see the [opt-in session-context evaluator](docs/session-context.md). For reproducible source provenance and inspection of changes in _which configuration layers are known_, see the [permission-source inventory API](docs/permission-source-provenance.md) and the [conservative source-aware evaluator](docs/source-aware-evaluation.md). This inventory never computes live precedence or proves effective permissions. This is separate from the existing CLI and JSON v1 report contract.
 
@@ -28,7 +28,7 @@ For pull-request automation, see the [fork-safe GitHub Actions integration](docs
 
 Requires **Node.js 24** and Git supporting `--no-lazy-fetch` (documented in Git 2.47+). Local macOS is tested; Linux is exercised by CI. Windows execution/symlinks are not validated.
 
-Install the published experimental release in the repository you want to inspect:
+Install the verified stable release in the repository you want to inspect:
 
 ```sh
 npm install --save-dev rulewitness@0.3.0
@@ -71,7 +71,7 @@ The gated command exits 1 for this known transition. Unsupported configuration i
 
 A changed JSON line does not establish a changed decision. Adding an allow beneath a matching deny does nothing to the supported decision model. Widening an exact permission to a wildcard can affect inputs that never appeared in a sample command list.
 
-RuleWitness compares bounded glob automata after applying `DENY → ASK → ALLOW` precedence. It re-evaluates every emitted transition witness against both policies and attaches commit IDs, paths, JSON pointers, reasons, and explicit limitations. No agent, hook, command from a configuration, or assertion input is executed. There are no runtime npm dependencies, network requests, paid AI calls, or telemetry.
+RuleWitness compares bounded glob automata after applying `DENY → ASK → ALLOW` precedence. It re-evaluates every emitted transition witness against both policies and attaches commit IDs, paths, JSON pointers, reasons, and explicit limitations. No agent, hook, command from a configuration, or assertion input is executed. The packaged experimental Codex TOML parser uses the pinned runtime npm dependency `smol-toml@1.9.1`; RuleWitness does not execute analyzed policies, make outbound network requests during analysis, call paid AI APIs, or collect telemetry.
 
 Semantic diffs, explanations and CI gates already exist elsewhere. Our focus is the inspectable combination of a narrow documented model, symbolic counterexamples, conservative uncertainty handling, and assertions using the same evaluator. The [research comparison](docs/rulewitness-research.md) credits the related projects and describes differences without claiming uniqueness.
 

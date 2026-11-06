@@ -2,9 +2,9 @@
 
 All notable changes are documented here. Entries marked **Unreleased** describe repository code, not a published npm version.
 
-## 0.4.0-rc.3 — prepared, NOT published
+## 0.4.0-rc.3 — GitHub prerelease published; npm publication verified on 2026-11-05
 
-This release candidate packages the changes merged after immutable `0.4.0-rc.2`. It remains an experimental prerelease and does not establish effective runtime permissions for Claude Code or Codex.
+The [GitHub prerelease](https://github.com/vlovers/rulewitness/releases/tag/v0.4.0-rc.3) exists at source commit `e0b110b17ca762e3ff1c4a99b5f5bba6f200cba0`. A later [read-only registry check (run 41952270676)](https://github.com/vlovers/rulewitness/actions/runs/41952270676), completed 2026-11-05 02:00 UTC on PR #87 commit `9f156a6818b99702abbdc51fe11f75009fc88a53`, verified that npm `rulewitness@0.4.0-rc.3` was published with a SHA-512 integrity value, `next` pointed to `0.4.0-rc.3`, and stable `latest` remained `0.3.0`. Earlier PR #81 returned `E404`; that is historical evidence, not the latest observation. This registry check and installed-package tests do not establish GitHub-tag-to-npm provenance or a final merged-main release approval. Recheck registry state before relying on current dist-tags. This remains an experimental prerelease and does not establish effective runtime permissions for Claude Code or Codex.
 
 ### Compatibility and security
 
@@ -20,8 +20,8 @@ This release candidate packages the changes merged after immutable `0.4.0-rc.2`.
 
 ### Release process
 
-- Add a read-only npm registry audit confirming the previously published dist-tags and prerelease SHA-512 integrity. **No `rc.3` npm publication, provenance or release tag is claimed here.**
-- `rc.3` requires its own green commit-bound CI, npm pack and registry checks and explicit authorization before publishing to `next`; stable `latest` remains outside this PR.
+- Add a read-only npm registry audit verifying `rc.3` availability, `next` and SHA-512 integrity while preserving stable `latest`. The workflow did not publish, tag or modify npm.
+- The later registry observation confirms `rc.3` availability at the stated time; it does not authorize any new publish, dist-tag mutation, provenance claim or stable release.
 
 ## 0.4.0-rc.2 — published 2026-10-21 (npm `next`, experimental)
 

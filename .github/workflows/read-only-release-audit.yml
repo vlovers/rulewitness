@@ -42,10 +42,12 @@ jobs:
                 lock.version !== pkg.version || lock.packages?.[""]?.name !== pkg.name ||
                 lock.packages?.[""]?.version !== pkg.version) throw Error("Package/lockfile disagreement");
             if (!Array.isArray(versions) || !versions.includes("0.3.0") ||
-                !versions.includes("0.4.0-rc.2") || versions.includes("0.4.0")) {
+                !versions.includes("0.4.0-rc.2") || versions.includes("0.4.0") ||
+                !versions.every(version => typeof version === "string")) {
               throw Error("Unexpected published version set or stable 0.4.0 already exists");
             }
-            if (tags.latest !== "0.3.0" || tags.next !== "0.4.0-rc.2") {
+            const expectedNext = versions.includes(pkg.version) ? pkg.version : "0.4.0-rc.2";
+            if (tags.latest !== "0.3.0" || tags.next !== expectedNext) {
               throw Error("Unexpected npm latest/next dist-tags");
             }
             if (typeof integrity !== "string" || !integrity.startsWith("sha512-")) {
