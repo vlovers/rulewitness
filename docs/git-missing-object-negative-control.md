@@ -1,0 +1,60 @@
+# Real missing Git objects — negative control
+
+RuleWitness must distinguish a **file that does not exist in a Git revision**
+from a **file whose tree entry exists but whose blob cannot be read**. Returning
+an empty policy for the latter would permit a false modeled no-op or an invalid
+CI pass.
+
+The executable regression suite
+[`test/git-missing-blob-e2e.test.ts`](../test/git-missing-blob-e2e.test.ts)
+constructs isolated, unnetworked disposable Git repositories, commits normal
+Claude and Codex settings, then removes actual loose Git objects from the object database. Blob
+fixtures leave the commit and tree intact; separate fixtures remove the
+root tree, nested `.claude` tree, or commit itself. These are deliberately
+different failure boundaries. It does not fake a
+SHA, execute agent commands, set up a remote, or fetch missing content.
+
+The tests verify:
+
+- A missing **head** Claude settings blob raises a read-only Git analysis
+  error, rather than a missing-config interpretation or a partial JSON report.
+- A missing **head** Codex TOML blob raises an analysis error rather than an
+  inferred safe posture or `runtimePermissionDiff: true`.
+- The Claude provider snapshot reader rejects a missing referenced Claude blob. The Codex provider discovery API examines **tree metadata only** and can still identify the Codex marker; it never claims that the TOML content has been read or validated. The actual Codex posture reader rejects the missing blob.
+- A missing **base** Claude blob does not silently fall back to the valid
+  checkout HEAD policy.
+- A genuinely absent tracked file is distinguishable from a corrupt/incomplete
+  object graph.
+- A missing **root tree** fails before provider discovery, without producing
+  success JSON or treating the configuration as absent.
+- A missing **nested `.claude` tree**, while the root tree and commit remain,
+  fails for Claude policy loading and provider discovery; the CLI returns
+  exit code **2**, no success JSON, and does not mutate HEAD, index or worktree.
+- A missing **Codex commit object** (while HEAD still names that SHA) fails
+  before tracked posture can be loaded; the CLI returns exit code **2**,
+  no success JSON, and diagnostics do not expose the TOML fixture.
+- A corrupt loose Git blob fails conservatively without leaking fixture content.
+- CLI compare operations fail with exit code **2**, without success JSON.
+- The Git HEAD, worktree status and index do not change through failed reads.
+- Error messages are generic and do not print contents of the source settings.
+
+This extends the existing [Codex consumer validation](codex-consumer-validation.md)
+negative controls and the [Git object boundary tests](../test/git-object-boundary.test.ts).
+
+## Scope of evidence
+
+These are **real missing-object Git fixtures** on a locally manufactured
+incomplete object graph. A missing commit is distinct from a nonexistent
+revision supplied by the caller, and a missing nested tree is distinct from
+a missing root tree. Neither distinction proves real hosted checkout behavior. They do not prove that GitHub Actions checkout itself
+will produce the same incomplete object graph under every shallow fetch,
+partial clone, Git version or fork workflow. In particular, this suite does
+**not** construct a promisor remote or prove offline partial-clone behavior;
+that boundary remains unverified and must not be described as tested. The read-only Git reader uses
+`--no-lazy-fetch`, removes inherited `GIT_*` overrides, and does not run
+`git fetch`, `git checkout`, shell commands from policy files, or hooks.
+
+The expected conservative outcome is an **analysis error**, not a claim that
+the requested command would be denied by Claude Code or Codex. Both providers
+remain limited to their documented configuration models; runtime enforcement
+and trust are not verified.
