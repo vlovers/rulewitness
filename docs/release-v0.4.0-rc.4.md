@@ -1,6 +1,6 @@
 # RuleWitness v0.4.0-rc.4 — proposed prerelease notes
 
-**Status: release preparation only; not yet published.** Publish from an exact reviewed commit after all gates pass. Do not claim that rc.4 is available on npm or GitHub until independently verified.
+**Status: merged to main via PR #92 (`5d44a0f1f2ce2cc317b5574c7a774f68add0abca`); not independently verified as published.** Publish from an exact reviewed commit after all gates pass. Do not claim that rc.4 is available on npm or GitHub until independently verified.
 
 ## Changes since rc.3
 
@@ -14,6 +14,11 @@
 - Existing Claude JSON v1 and stable v0.3 consumer contracts remain unchanged.
 - `complete: false` and `runtimeVerified: false` remain explicit; Codex also uses `runtimePermissionDiff: false`.
 - This does not prove native Claude/Codex runtime behavior, trust, profile precedence, managed/user settings, Windows conformance or provenance of previously published rc.3.
+
+## Verified source checks
+
+- PR #92 head `c49ffa13377fd2da070905e95d256909a6999ffa`: six GitHub checks passed, including Node 24 CI, registry preflight, tarball/installed consumer, permissions review and stable v0.3 compatibility.
+- PR #92 was squash-merged as `5d44a0f1f2ce2cc317b5574c7a774f68add0abca`. Head CI does **not** prove the merge SHA was independently tested. No GitHub Release, npm publication, npm provenance or current dist-tag state is asserted here.
 
 ## Publication checklist
 
