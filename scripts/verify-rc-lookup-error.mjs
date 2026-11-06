@@ -22,4 +22,6 @@ if (
 ) {
   throw new Error("npm lookup failure is not a verified absent rc.3 candidate");
 }
-console.log("Confirmed absent rc.3 candidate; fallback to JSON null is permitted");
+console.log(
+  "Confirmed absent rc.3 candidate; fallback to JSON null is permitted",
+);
