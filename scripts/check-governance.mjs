@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, realpathSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, realpathSync, statSync } from "node:fs";
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -32,6 +32,25 @@ function inside(root, candidate) {
 export function checkGovernance(directory) {
   const errors = [];
   const root = realpathSync(resolve(directory));
+  // A Markdown and a YAML engineering-task template are competing intake paths.
+  // Check the final integrated tree, not just this PR's changed files.
+  const templateDir = resolve(root, ".github/ISSUE_TEMPLATE");
+  try {
+    if (!inside(root, realpathSync(templateDir))) throw Error("unsafe directory");
+    const names = readdirSync(templateDir).filter((name) =>
+      /^(?:engineering(?:_task)?|engineering-task)\.(?:md|ya?ml)$/i.test(name),
+    );
+    if (names.length !== 1) {
+      errors.push(
+        ".github/ISSUE_TEMPLATE: expected exactly one engineering intake template, found " +
+          names.length + (names.length ? ": " + names.sort().join(", ") : ""),
+      );
+    } else if (!inside(root, realpathSync(resolve(templateDir, names[0])))) {
+      errors.push(".github/ISSUE_TEMPLATE: engineering intake escapes repository");
+    }
+  } catch {
+    errors.push(".github/ISSUE_TEMPLATE: missing or unsafe template directory");
+  }
   for (const name of required) {
     const file = resolve(root, name);
     let contents;
