@@ -113,10 +113,11 @@ function render(result: ExperimentalProviderEnvelope): string {
   decision from configured sandbox changes.
 - `configured-no-op` means no observed change in the limited represented
   posture model, not unchanged runtime behavior.
-- The envelopes reference caller-supplied existing report objects; callers
-  should treat returned DTOs as analysis evidence, not trusted policy or a
-  tamper-resistant signed report. Never insert raw configuration or witness
-  strings into unescaped HTML/Markdown.
+- The envelopes take detached snapshots of caller-supplied report objects;
+  later mutation of the input does not alter the returned evidence. The DTOs
+  are not frozen, cryptographically signed or trusted runtime policy: callers
+  can still mutate the returned envelope. Never insert raw configuration or
+  witness strings into unescaped HTML/Markdown.
 - No new default CLI output, no JSON v1 schema changes and no new Codex
   semantic permission support. A future stable v2 report contract requires
   a separate compatibility and native-conformance decision.

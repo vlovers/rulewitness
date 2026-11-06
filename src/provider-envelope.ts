@@ -70,6 +70,7 @@ export function createExperimentalClaudeEnvelope(
   )
     throw new Error("Invalid or unsupported Claude comparison report");
 
+  // A returned envelope must not change when a caller mutates its input.
   return {
     schemaVersion: 2,
     provider: "claude-code",
@@ -79,7 +80,7 @@ export function createExperimentalClaudeEnvelope(
     runtimeVerified: false,
     revisions: [report.revisions[0], report.revisions[1]],
     outcome: comparisonOutcome(report),
-    report,
+    report: structuredClone(report),
   };
 }
 
@@ -154,6 +155,7 @@ export function createExperimentalCodexEnvelope(
     );
 
   const uncertain = comparison.uncertain || review.direction === "unknown";
+  // Preserve the validated evidence as detached snapshots.
   return {
     schemaVersion: 2,
     provider: "codex",
@@ -168,7 +170,7 @@ export function createExperimentalCodexEnvelope(
       : review.direction === "unchanged"
         ? "configured-no-op"
         : "configured-change",
-    comparison,
-    review,
+    comparison: structuredClone(comparison),
+    review: structuredClone(review),
   };
 }

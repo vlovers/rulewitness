@@ -132,7 +132,9 @@ test("experimental v2 Codex records a configured change, never permission escala
   assert.equal(result.runtimeVerified, false);
   assert.equal(result.runtimePermissionDiff, false);
   assert.equal(result.review.direction, "mixed");
-  assert.equal(result.comparison, comparison);
+  assert.deepEqual(result.comparison, comparison);
+  assert.notEqual(result.comparison, comparison);
+  assert.notEqual(result.review, review);
   assert.deepEqual(result.revisions, ["a".repeat(40), "b".repeat(40)]);
   assert.deepEqual(JSON.parse(JSON.stringify(result)), result);
 });
@@ -230,4 +232,29 @@ test("provider discriminant prevents interpreting configured posture as Claude p
       }
     }
   }
+});
+
+test("experimental v2 Claude envelope retains evidence after caller mutation", () => {
+  const report = comparePolicies(
+    claude("before", { ask: ["Bash(npm test)"] }),
+    claude("after", { allow: ["Bash(npm test)"] }),
+  );
+  const envelope = createExperimentalClaudeEnvelope(report);
+  const snapshot = JSON.stringify(envelope);
+  assert.notEqual(envelope.report, report);
+  report.findings.length = 0;
+  report.revisions[0] = "mutated";
+  assert.equal(JSON.stringify(envelope), snapshot);
+  assert.equal(envelope.outcome, "modeled-change");
+});
+
+test("experimental v2 Codex envelope retains evidence after caller mutation", () => {
+  const { comparison, review } = codex(knownToml, broaderToml);
+  const envelope = createExperimentalCodexEnvelope(comparison, review);
+  const snapshot = JSON.stringify(envelope);
+  comparison.before.revision = "mutated";
+  comparison.posture.changes.length = 0;
+  review.unresolved.length = 0;
+  assert.equal(JSON.stringify(envelope), snapshot);
+  assert.equal(envelope.outcome, "configured-change");
 });
