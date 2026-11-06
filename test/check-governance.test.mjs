@@ -38,6 +38,8 @@ function fixture(run) {
       join(root, "docs/engineering/MULTI_AGENT_WORKFLOW.md"),
       "# Protocol\n\nIssue worktree review and validation.\n",
     );
+    mkdirSync(join(root, ".github/ISSUE_TEMPLATE"), { recursive: true });
+    writeFileSync(join(root, ".github/ISSUE_TEMPLATE/engineering.yml"), "name: Engineering work package\\n");
     run(root, outside);
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -152,4 +154,36 @@ test("escaped parentheses in local link are checked", () =>
       checkGovernance(root).join("\n"),
       /broken or unsafe local link/,
     );
+  }));
+
+
+test("duplicate engineering intake templates fail closed", () =>
+  fixture((root) => {
+    writeFileSync(
+      join(root, ".github/ISSUE_TEMPLATE/engineering_task.md"),
+      "---\\nname: Engineering task\\n---\\n",
+    );
+    assert.match(
+      checkGovernance(root).join("\\n"),
+      /expected exactly one engineering intake template, found 2/,
+    );
+  }));
+
+test("missing engineering intake fails closed", () =>
+  fixture((root) => {
+    rmSync(join(root, ".github/ISSUE_TEMPLATE/engineering.yml"));
+    assert.match(
+      checkGovernance(root).join("\\n"),
+      /expected exactly one engineering intake template, found 0/,
+    );
+  }));
+
+test("single Markdown engineering intake is accepted", () =>
+  fixture((root) => {
+    rmSync(join(root, ".github/ISSUE_TEMPLATE/engineering.yml"));
+    writeFileSync(
+      join(root, ".github/ISSUE_TEMPLATE/engineering_task.md"),
+      "---\\nname: Engineering task\\n---\\n",
+    );
+    assert.deepEqual(checkGovernance(root), []);
   }));
