@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-const missing = "npm error code E404\\nnpm error 404 rulewitness@0.4.0-rc.3 is not in this registry.\\n";
+const missing = "npm error code E404\nnpm error 404 rulewitness@0.4.0-rc.3 is not in this registry.\n";
 const cases = [
   {
     name: "confirmed E404 permits an absent candidate",
@@ -15,25 +15,25 @@ const cases = [
   },
   {
     name: "legacy npm ERR! E404 format is accepted",
-    error: "npm ERR! code E404\\nnpm ERR! 404 rulewitness@0.4.0-rc.3 not found\\n",
+    error: "npm ERR! code E404\nnpm ERR! 404 rulewitness@0.4.0-rc.3 not found\n",
     versions: ["0.3.0", "0.4.0-rc.2"],
     accepted: true,
   },
   {
     name: "transient registry errors are rejected",
-    error: "npm error code E503\\nnpm error rulewitness@0.4.0-rc.3\\n",
+    error: "npm error code E503\nnpm error rulewitness@0.4.0-rc.3\n",
     versions: ["0.3.0", "0.4.0-rc.2"],
     accepted: false,
   },
   {
     name: "unrelated E404 is rejected",
-    error: "npm error code E404\\nnpm error unrelated-package@1.0.0 not found\\n",
+    error: "npm error code E404\nnpm error unrelated-package@1.0.0 not found\n",
     versions: ["0.3.0", "0.4.0-rc.2"],
     accepted: false,
   },
   {
     name: "mixed E404 and transient error is rejected",
-    error: missing + "npm error code E503\\n",
+    error: missing + "npm error code E503\n",
     versions: ["0.3.0", "0.4.0-rc.2"],
     accepted: false,
   },
@@ -51,7 +51,7 @@ const cases = [
   },
   {
     name: "missing npm error code is rejected",
-    error: "npm error 404 rulewitness@0.4.0-rc.3 not found\\n",
+    error: "npm error 404 rulewitness@0.4.0-rc.3 not found\n",
     versions: ["0.3.0", "0.4.0-rc.2"],
     accepted: false,
   },

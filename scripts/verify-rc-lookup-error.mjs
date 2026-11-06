@@ -8,7 +8,7 @@ if (!errorPath || !versionsPath)
 
 const stderr = readFileSync(errorPath, "utf8");
 const versions = JSON.parse(readFileSync(versionsPath, "utf8"));
-const errorCodes = [...stderr.matchAll(/^npm (?:error|ERR!) code (E[A-Z0-9]+)\\s*$/gm)].map(
+const errorCodes = [...stderr.matchAll(/^npm (?:error|ERR!) code (E[A-Z0-9]+)\s*$/gm)].map(
   (match) => match[1],
 );
 if (
