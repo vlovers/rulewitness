@@ -40,7 +40,10 @@ if (
 
 const published = versions.includes(pkg.version);
 const validSha512 = (value) => {
-  if (typeof value !== "string" || !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(value))
+  if (
+    typeof value !== "string" ||
+    !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(value)
+  )
     return false;
   const encoded = value.slice("sha512-".length);
   const digest = Buffer.from(encoded, "base64");
