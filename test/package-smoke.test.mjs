@@ -908,7 +908,13 @@ test("package: experimental provider envelopes load from installed tarball", () 
 } from "rulewitness";
 const first = parsePolicy("base", { ".claude/settings.json": JSON.stringify({ permissions: { ask: ["Bash(npm test)"] } }) });
 const second = parsePolicy("head", { ".claude/settings.json": JSON.stringify({ permissions: { allow: ["Bash(npm test)"] } }) });
-const claude = createExperimentalClaudeEnvelope(comparePolicies(first, second));
+const originalClaudeReport = comparePolicies(first, second);
+const claude = createExperimentalClaudeEnvelope(originalClaudeReport);
+const claudeSnapshot = JSON.stringify(claude);
+originalClaudeReport.revisions[0] = "changed-after-envelope";
+originalClaudeReport.findings.length = 0;
+if (JSON.stringify(claude) !== claudeSnapshot || claude.report === originalClaudeReport)
+  throw new Error("Installed Claude envelope leaked caller-owned report");
 if (claude.schemaVersion !== 2 || claude.analysisKind !== "modeled-permission-decision-diff" ||
     claude.report.schemaVersion !== 1 || claude.outcome !== "modeled-change" || claude.runtimeVerified !== false)
   throw new Error("Installed Claude envelope contract mismatch");
@@ -921,7 +927,14 @@ const comparison = {
   after: { revision: "b".repeat(40), path: ".codex/config.toml", present: true, posture: next },
   posture, uncertain: false, runtimePermissionDiff: false,
 };
-const codex = createExperimentalCodexEnvelope(comparison, reviewCodexPosture(old, next));
+const review = reviewCodexPosture(old, next);
+const codex = createExperimentalCodexEnvelope(comparison, review);
+const codexSnapshot = JSON.stringify(codex);
+comparison.before.revision = "changed-after-envelope";
+Object.assign(comparison.posture, { changes: [] });
+Object.assign(review, { unresolved: [] });
+if (JSON.stringify(codex) !== codexSnapshot || codex.comparison === comparison || codex.review === review)
+  throw new Error("Installed Codex envelope leaked caller-owned evidence");
 if (codex.schemaVersion !== 2 || codex.analysisKind !== "configured-posture-diff" ||
     codex.outcome !== "configured-change" || codex.runtimePermissionDiff !== false ||
     codex.runtimeVerified !== false)
