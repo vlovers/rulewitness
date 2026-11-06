@@ -2,6 +2,8 @@
 
 **Semantic Permission Diff for AI Coding Agents**
 
+**Engineering governance:** [Agent working agreement](AGENTS.md) · [Multi-agent workflow](docs/engineering/MULTI_AGENT_WORKFLOW.md) · [Definition of Done](docs/engineering/DEFINITION_OF_DONE.md) · [Independent review](docs/engineering/REVIEW_POLICY.md) · [Release checklist](docs/engineering/RELEASE_CHECKLIST.md). These are contribution rules, not evidence of runtime authorization or permission-model conformance.
+
 [![RuleWitness CI](https://github.com/vlovers/rulewitness/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/vlovers/rulewitness/actions/workflows/ci.yml?query=branch%3Amain)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![npm version](https://img.shields.io/npm/v/rulewitness.svg)](https://www.npmjs.com/package/rulewitness)
