@@ -267,10 +267,16 @@ test("experimental v2 rejects malformed nested Claude evidence and Codex presenc
   const invalidReports = [
     { ...report, policies: [null, report.policies[1]] },
     { ...report, policies: [report.policies[0]] },
-    { ...report, policies: [{ ...report.policies[0], issues: null }, report.policies[1]] },
+    {
+      ...report,
+      policies: [{ ...report.policies[0], issues: null }, report.policies[1]],
+    },
     { ...report, findings: [null] },
     { ...report, findings: [{ ...report.findings[0], before: null }] },
-    { ...report, findings: [{ ...report.findings[0], after: { decision: "ALLOW" } }] },
+    {
+      ...report,
+      findings: [{ ...report.findings[0], after: { decision: "ALLOW" } }],
+    },
     { ...report, findings: [{ ...report.findings[0], severity: "CRITICAL" }] },
   ];
   for (const invalid of invalidReports) {
@@ -297,4 +303,3 @@ test("experimental v2 rejects malformed nested Claude evidence and Codex presenc
     );
   }
 });
-

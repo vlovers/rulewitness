@@ -64,11 +64,15 @@ function validClaudeEvidence(report: Report): boolean {
         typeof policy === "object" &&
         typeof policy.revision === "string" &&
         Array.isArray(policy.issues) &&
-        policy.issues.every((issue) => issue !== null && typeof issue === "object") &&
+        policy.issues.every(
+          (issue) => issue !== null && typeof issue === "object",
+        ) &&
         Array.isArray(policy.rules) &&
         Array.isArray(policy.files),
     ) &&
-    report.policies.every((policy, index) => policy.revision === report.revisions[index]) &&
+    report.policies.every(
+      (policy, index) => policy.revision === report.revisions[index],
+    ) &&
     report.findings.every(
       (finding) =>
         finding !== null &&
