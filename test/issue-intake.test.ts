@@ -30,7 +30,7 @@ test("bug report has usable metadata and private disclosure guidance", () => {
   assert.ok(metadata.name);
   assert.ok(metadata.about);
   assert.ok(metadata.title?.endsWith(": "));
-  assert.match(bug, /https:\\/\\/github\\.com\\/vlovers\\/rulewitness\\/blob\\/main\\/SECURITY\\.md/);
+  assert.ok(bug.includes("https://github.com/vlovers/rulewitness/blob/main/SECURITY.md"));
   assert.match(bug, /do not|never/i);
   assert.match(bug, /securit(y|ies)|vulnerabilit(y|ies)/i);
 });
