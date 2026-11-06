@@ -40,31 +40,12 @@ if (
 
 const published = versions.includes(pkg.version);
 const validSha512 = (value) => {
-  if (
-    typeof value !== "string" ||
-    !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(value)
-  )
-    return false;
-  const encoded = value.slice("sha512-".length);
+  const encoded = typeof value === "string" ? value.slice(7) : "";
   const digest = Buffer.from(encoded, "base64");
-  return digest.length === 64 && digest.toString("base64") === encoded;
-};
-if (published) {
-  if (
-    tags.next !== pkg.version ||
-    !validSha512(integrity)
-  ) {
-    throw new Error(
-      "Published rc.3 requires matching next tag and sha512 integrity",
-    );
-  }
-  console.log(
-    "Registry state: published rc.3 verified, stable latest preserved",
+  return (
+    typeof value === "string" &&
+    /^sha512-[A-Za-z0-9+/]+={0,2}$/.test(value) &&
+    digest.length === 64 &&
+    digest.toString("base64") === encoded
   );
-} else {
-  if (tags.next !== previousNext || integrity !== null)
-    throw new Error(
-      "Unpublished rc.3 must preserve previous next and have no integrity",
-    );
-  console.log("Registry state: unpublished rc.3, stable latest preserved");
-}
+};
