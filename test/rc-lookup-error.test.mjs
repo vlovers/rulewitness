@@ -6,43 +6,43 @@ import { join } from "node:path";
 import test from "node:test";
 
 const missing =
-  "npm error code E404\nnpm error 404 rulewitness@0.4.0-rc.3 is not in this registry.\n";
+  "npm error code E404\nnpm error 404 rulewitness@0.4.0-rc.4 is not in this registry.\n";
 const cases = [
   {
     name: "confirmed E404 permits an absent candidate",
     error: missing,
-    versions: ["0.3.0", "0.4.0-rc.2"],
+    versions: ["0.3.0", "0.4.0-rc.3"],
     accepted: true,
   },
   {
     name: "legacy npm ERR! E404 format is accepted",
     error:
-      "npm ERR! code E404\nnpm ERR! 404 rulewitness@0.4.0-rc.3 not found\n",
-    versions: ["0.3.0", "0.4.0-rc.2"],
+      "npm ERR! code E404\nnpm ERR! 404 rulewitness@0.4.0-rc.4 not found\n",
+    versions: ["0.3.0", "0.4.0-rc.3"],
     accepted: true,
   },
   {
     name: "transient registry errors are rejected",
-    error: "npm error code E503\nnpm error rulewitness@0.4.0-rc.3\n",
-    versions: ["0.3.0", "0.4.0-rc.2"],
+    error: "npm error code E503\nnpm error rulewitness@0.4.0-rc.4\n",
+    versions: ["0.3.0", "0.4.0-rc.3"],
     accepted: false,
   },
   {
     name: "unrelated E404 is rejected",
     error: "npm error code E404\nnpm error unrelated-package@1.0.0 not found\n",
-    versions: ["0.3.0", "0.4.0-rc.2"],
+    versions: ["0.3.0", "0.4.0-rc.3"],
     accepted: false,
   },
   {
     name: "mixed E404 and transient error is rejected",
     error: missing + "npm error code E503\n",
-    versions: ["0.3.0", "0.4.0-rc.2"],
+    versions: ["0.3.0", "0.4.0-rc.3"],
     accepted: false,
   },
   {
     name: "candidate already in versions cannot be treated as absent",
     error: missing,
-    versions: ["0.3.0", "0.4.0-rc.2", "0.4.0-rc.3"],
+    versions: ["0.3.0", "0.4.0-rc.3", "0.4.0-rc.4"],
     accepted: false,
   },
   {
@@ -53,8 +53,8 @@ const cases = [
   },
   {
     name: "missing npm error code is rejected",
-    error: "npm error 404 rulewitness@0.4.0-rc.3 not found\n",
-    versions: ["0.3.0", "0.4.0-rc.2"],
+    error: "npm error 404 rulewitness@0.4.0-rc.4 not found\n",
+    versions: ["0.3.0", "0.4.0-rc.3"],
     accepted: false,
   },
 ];

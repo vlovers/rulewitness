@@ -46,7 +46,7 @@ jobs:
                 !versions.every(version => typeof version === "string")) {
               throw Error("Unexpected published version set or stable 0.4.0 already exists");
             }
-            const expectedNext = versions.includes(pkg.version) ? pkg.version : "0.4.0-rc.2";
+            const expectedNext = versions.includes(pkg.version) ? pkg.version : "0.4.0-rc.3";
             if (tags.latest !== "0.3.0" || tags.next !== expectedNext) {
               throw Error("Unexpected npm latest/next dist-tags");
             }
