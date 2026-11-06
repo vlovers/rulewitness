@@ -258,3 +258,43 @@ test("experimental v2 Codex envelope retains evidence after caller mutation", ()
   assert.equal(JSON.stringify(envelope), snapshot);
   assert.equal(envelope.outcome, "configured-change");
 });
+
+test("experimental v2 rejects malformed nested Claude evidence and Codex presence", () => {
+  const report = comparePolicies(
+    claude("before", { ask: ["Bash(npm test)"] }),
+    claude("after", { allow: ["Bash(npm test)"] }),
+  );
+  const invalidReports = [
+    { ...report, policies: [null, report.policies[1]] },
+    { ...report, policies: [report.policies[0]] },
+    { ...report, policies: [{ ...report.policies[0], issues: null }, report.policies[1]] },
+    { ...report, findings: [null] },
+    { ...report, findings: [{ ...report.findings[0], before: null }] },
+    { ...report, findings: [{ ...report.findings[0], after: { decision: "ALLOW" } }] },
+    { ...report, findings: [{ ...report.findings[0], severity: "CRITICAL" }] },
+  ];
+  for (const invalid of invalidReports) {
+    assert.throws(
+      () => createExperimentalClaudeEnvelope(invalid as typeof report),
+      /Invalid or unsupported Claude comparison report/,
+    );
+  }
+  const { comparison, review } = codex(knownToml, broaderToml);
+  for (const invalidPresent of ["true", 1, null, undefined]) {
+    assert.throws(
+      () =>
+        createExperimentalCodexEnvelope(
+          {
+            ...comparison,
+            before: {
+              ...comparison.before,
+              present: invalidPresent as boolean,
+            },
+          },
+          review,
+        ),
+      /Invalid or inconsistent Codex configured-posture evidence/,
+    );
+  }
+});
+

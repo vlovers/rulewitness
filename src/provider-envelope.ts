@@ -53,6 +53,42 @@ function validRevisions(revisions: unknown): revisions is [string, string] {
   );
 }
 
+function validClaudeEvidence(report: Report): boolean {
+  const decisions = ["ALLOW", "ASK", "DENY", "UNKNOWN"];
+  const severities = ["HIGH", "MEDIUM", "LOW", "INFO"];
+  return (
+    report.policies.length === 2 &&
+    report.policies.every(
+      (policy) =>
+        policy !== null &&
+        typeof policy === "object" &&
+        typeof policy.revision === "string" &&
+        Array.isArray(policy.issues) &&
+        policy.issues.every((issue) => issue !== null && typeof issue === "object") &&
+        Array.isArray(policy.rules) &&
+        Array.isArray(policy.files),
+    ) &&
+    report.policies.every((policy, index) => policy.revision === report.revisions[index]) &&
+    report.findings.every(
+      (finding) =>
+        finding !== null &&
+        typeof finding === "object" &&
+        ["permission", "coverage"].includes(finding.kind) &&
+        typeof finding.tool === "string" &&
+        typeof finding.witness === "string" &&
+        severities.includes(finding.severity) &&
+        [finding.before, finding.after].every(
+          (evaluation) =>
+            evaluation !== null &&
+            typeof evaluation === "object" &&
+            decisions.includes(evaluation.decision) &&
+            typeof evaluation.reason === "string" &&
+            Array.isArray(evaluation.evidence),
+        ),
+    )
+  );
+}
+
 /** Convert only a supported v1 Claude comparison, never a scan or test report. */
 export function createExperimentalClaudeEnvelope(
   report: Report,
@@ -66,7 +102,8 @@ export function createExperimentalClaudeEnvelope(
     report.complete !== false ||
     !validRevisions(report.revisions) ||
     !Array.isArray(report.policies) ||
-    !Array.isArray(report.findings)
+    !Array.isArray(report.findings) ||
+    !validClaudeEvidence(report)
   )
     throw new Error("Invalid or unsupported Claude comparison report");
 
@@ -103,6 +140,8 @@ export function createExperimentalCodexEnvelope(
     review.runtimeVerified !== false ||
     !comparison.before ||
     !comparison.after ||
+    typeof comparison.before.present !== "boolean" ||
+    typeof comparison.after.present !== "boolean" ||
     comparison.before.path !== ".codex/config.toml" ||
     comparison.after.path !== ".codex/config.toml" ||
     !validRevisions([comparison.before.revision, comparison.after.revision]) ||
