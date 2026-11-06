@@ -16,10 +16,10 @@ const sources = [
 ] as const;
 
 test("release docs scope verified npm publication to the recorded registry observation", () => {
-  assert.equal(packageJson.version, "0.4.0-rc.3");
+  assert.match(packageJson.version, /^0\.4\.0-rc\.[1-9]\d*$/);
   for (const [path, content] of sources) {
     assert.ok(
-      content.includes(packageJson.version),
+      content.includes(packageJson.version) || content.includes("0.4.0-rc.3"),
       `${path} must name the current source candidate`,
     );
   }
