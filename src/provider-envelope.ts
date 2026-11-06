@@ -53,6 +53,17 @@ function validRevisions(revisions: unknown): revisions is [string, string] {
   );
 }
 
+function validEvidence(value: unknown): boolean {
+  if (value === null || typeof value !== "object") return false;
+  const evidence = value as Record<string, unknown>;
+  return (
+    typeof evidence.revision === "string" &&
+    typeof evidence.file === "string" &&
+    typeof evidence.pointer === "string" &&
+    (evidence.rule === undefined || typeof evidence.rule === "string")
+  );
+}
+
 function validClaudeEvidence(report: Report): boolean {
   const decisions = ["ALLOW", "ASK", "DENY", "UNKNOWN"];
   const severities = ["HIGH", "MEDIUM", "LOW", "INFO"];
@@ -65,10 +76,26 @@ function validClaudeEvidence(report: Report): boolean {
         typeof policy.revision === "string" &&
         Array.isArray(policy.issues) &&
         policy.issues.every(
-          (issue) => issue !== null && typeof issue === "object",
+          (issue) =>
+            issue !== null &&
+            typeof issue === "object" &&
+            typeof issue.message === "string" &&
+            validEvidence(issue.evidence) &&
+            typeof issue.fingerprint === "string" &&
+            (issue.tool === null || typeof issue.tool === "string"),
         ) &&
         Array.isArray(policy.rules) &&
-        Array.isArray(policy.files),
+        policy.rules.every(
+          (rule) =>
+            rule !== null &&
+            typeof rule === "object" &&
+            typeof rule.tool === "string" &&
+            typeof rule.pattern === "string" &&
+            ["ALLOW", "ASK", "DENY"].includes(rule.decision) &&
+            validEvidence(rule.evidence),
+        ) &&
+        Array.isArray(policy.files) &&
+        policy.files.every((file) => typeof file === "string"),
     ) &&
     report.policies.every(
       (policy, index) => policy.revision === report.revisions[index],
@@ -87,7 +114,8 @@ function validClaudeEvidence(report: Report): boolean {
             typeof evaluation === "object" &&
             decisions.includes(evaluation.decision) &&
             typeof evaluation.reason === "string" &&
-            Array.isArray(evaluation.evidence),
+            Array.isArray(evaluation.evidence) &&
+            evaluation.evidence.every(validEvidence),
         ),
     )
   );
