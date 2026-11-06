@@ -51,10 +51,7 @@ const validSha512 = (value) => {
 };
 
 if (published) {
-  if (
-    tags.next !== pkg.version ||
-    !validSha512(integrity)
-  ) {
+  if (tags.next !== pkg.version || !validSha512(integrity)) {
     throw new Error(
       "Published rc.3 requires matching next tag and sha512 integrity",
     );
