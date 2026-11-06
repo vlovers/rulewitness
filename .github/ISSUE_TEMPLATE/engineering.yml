@@ -22,8 +22,9 @@ body:
         For analyzer/API changes, explicitly address published JSON schema v1,
         CLI exit codes 0/1/2/3 (including uncertainty exit 3), complete:false,
         fail-closed handling of unsupported rules and missing Git objects,
-        and backward compatibility. Experimental Codex configured posture is
-        not effective runtime authorization.
+        and backward compatibility of public APIs and npm consumers.
+        Experimental Codex configured posture is not effective runtime authorization.
+        Distinguish implemented, tested, reviewed, merged and published.
     validations:
       required: true
   - type: textarea
