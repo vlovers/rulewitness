@@ -36,15 +36,15 @@ export function checkGovernance(directory) {
   // Check the final integrated tree, not just this PR's changed files.
   const templateDir = resolve(root, ".github/ISSUE_TEMPLATE");
   try {
-    if (!inside(root, realpathSync(templateDir)))
-      throw Error("unsafe directory");
+    if (!inside(root, realpathSync(templateDir))) throw Error("unsafe directory");
     const names = readdirSync(templateDir).filter((name) =>
       /^(?:engineering(?:_task)?|engineering-task)\.(?:md|ya?ml)$/i.test(name),
     );
     if (names.length !== 1) {
+      const count = names.length;
+      const details = count ? ": " + names.sort().join(", ") : "";
       errors.push(
-        ".github/ISSUE_TEMPLATE: expected exactly one engineering intake template, found " +
-          names.length + (names.length ? ": " + names.sort().join(", ") : ""),
+        `.github/ISSUE_TEMPLATE: expected exactly one engineering intake template, found ${count}${details}`,
       );
     } else if (
       !inside(root, realpathSync(resolve(templateDir, names[0])))
