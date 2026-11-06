@@ -9,9 +9,7 @@ if (!errorPath || !versionsPath)
 const stderr = readFileSync(errorPath, "utf8");
 const versions = JSON.parse(readFileSync(versionsPath, "utf8"));
 const codePattern = /^npm (?:error|ERR!) code (E[A-Z0-9]+)\s*$/gm;
-const errorCodes = Array.from(stderr.matchAll(codePattern), (match) =>
-  match[1],
-);
+const errorCodes = [...stderr.matchAll(codePattern)].map((match) => match[1]);
 if (
   errorCodes.length !== 1 ||
   errorCodes[0] !== "E404" ||

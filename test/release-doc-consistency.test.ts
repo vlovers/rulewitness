@@ -78,3 +78,12 @@ test("documented stable install remains pinned, not accidentally switched to unv
     /npm install (?:--global|--save-dev) rulewitness@0\.4\.0-rc\.3/,
   );
 });
+
+test("read-only release audit follows published candidate without moving stable latest", () => {
+  const workflow = read(".github/workflows/read-only-release-audit.yml");
+  assert.match(workflow, /versions\.includes\(pkg\.version\) \? pkg\.version/);
+  assert.match(workflow, /tags\.latest !== "0\.3\.0"/);
+  assert.match(workflow, /versions\.includes\("0\.4\.0"\)/);
+  assert.match(workflow, /rulewitness@0\.4\.0-rc\.2 dist\.integrity/);
+  assert.doesNotMatch(workflow, /tags\.next !== "0\.4\.0-rc\.2"/);
+});
