@@ -42,7 +42,7 @@ function fixture(run) {
     mkdirSync(join(root, ".github/ISSUE_TEMPLATE"), { recursive: true });
     writeFileSync(
       join(root, ".github/ISSUE_TEMPLATE/engineering.yml"),
-      "name: Engineering work package\\ndescription: Scoped task\\nbody:\\n  - type: input\\n    id: parent\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: outcome\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: boundaries\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: ownership\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: verification\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: handoff\\n    validations:\\n      required: true\\n  - type: checkboxes\\n    id: safety\\n",
+      "name: Engineering work package\ndescription: Scoped task\nbody:\n  - type: input\n    id: parent\n    validations:\n      required: true\n  - type: textarea\n    id: outcome\n    validations:\n      required: true\n  - type: textarea\n    id: boundaries\n    validations:\n      required: true\n  - type: textarea\n    id: ownership\n    validations:\n      required: true\n  - type: textarea\n    id: verification\n    validations:\n      required: true\n  - type: textarea\n    id: handoff\n    validations:\n      required: true\n  - type: checkboxes\n    id: safety\n",
     );
     run(root, outside);
   } finally {
