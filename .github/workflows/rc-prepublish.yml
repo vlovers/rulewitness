@@ -36,7 +36,7 @@ jobs:
             const pkg = JSON.parse(fs.readFileSync("package.json", "utf8"));
             const lock = JSON.parse(fs.readFileSync("package-lock.json", "utf8"));
             const change = fs.readFileSync("CHANGELOG.md", "utf8");
-            if (pkg.name !== "rulewitness" || pkg.version !== "0.4.0-rc.3" ||
+            if (pkg.name !== "rulewitness" || !/^0\.4\.0-rc\.[1-9]\d*$/.test(pkg.version) ||
               lock.name !== pkg.name || lock.version !== pkg.version ||
               lock.packages?.[""]?.name !== pkg.name || lock.packages?.[""]?.version !== pkg.version ||
               !change.split("\n").some(line => line.startsWith("## " + pkg.version + " "))) {
@@ -45,7 +45,8 @@ jobs:
           '
           npm view rulewitness versions --json --registry=https://registry.npmjs.org/ --prefer-online --cache="$RUNNER_TEMP/prepublish-cache" > "$RUNNER_TEMP/versions.json"
           npm view rulewitness dist-tags --json --registry=https://registry.npmjs.org/ --prefer-online --cache="$RUNNER_TEMP/prepublish-cache" > "$RUNNER_TEMP/tags.json"
-          if npm view rulewitness@0.4.0-rc.3 dist.integrity --json --registry=https://registry.npmjs.org/ --prefer-online --cache="$RUNNER_TEMP/prepublish-cache" > "$RUNNER_TEMP/rc-integrity.json" 2> "$RUNNER_TEMP/rc-lookup-error.txt"; then
+          VERSION="$(node -p 'require("./package.json").version')"
+          if npm view "rulewitness@$VERSION" dist.integrity --json --registry=https://registry.npmjs.org/ --prefer-online --cache="$RUNNER_TEMP/prepublish-cache" > "$RUNNER_TEMP/rc-integrity.json" 2> "$RUNNER_TEMP/rc-lookup-error.txt"; then
             :
           else
             # An absent prerelease is valid before publication, but unexpected
