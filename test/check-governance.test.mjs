@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   mkdtempSync,
+  readFileSync,
   mkdirSync,
   rmSync,
   symlinkSync,
@@ -41,7 +42,7 @@ function fixture(run) {
     mkdirSync(join(root, ".github/ISSUE_TEMPLATE"), { recursive: true });
     writeFileSync(
       join(root, ".github/ISSUE_TEMPLATE/engineering.yml"),
-      "name: Engineering work package\n",
+      "name: Engineering work package\\ndescription: Scoped task\\nbody:\\n  - type: input\\n    id: parent\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: outcome\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: boundaries\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: ownership\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: verification\\n    validations:\\n      required: true\\n  - type: textarea\\n    id: handoff\\n    validations:\\n      required: true\\n  - type: checkboxes\\n    id: safety\\n",
     );
     run(root, outside);
   } finally {
@@ -188,4 +189,30 @@ test("single Markdown engineering intake is accepted", () =>
       "---\nname: Engineering task\n---\n",
     );
     assert.deepEqual(checkGovernance(root), []);
+  }));
+
+test("engineering form without metadata or fields is rejected", () =>
+  fixture((root) => {
+    writeFileSync(join(root, ".github/ISSUE_TEMPLATE/engineering.yml"), "name: Engineering\n");
+    assert.match(checkGovernance(root).join("\n"), /engineering form missing metadata/);
+    assert.match(checkGovernance(root).join("\n"), /engineering form missing or duplicate fields/);
+  }));
+test("engineering form missing required validations is rejected", () =>
+  fixture((root) => {
+    const path = join(root, ".github/ISSUE_TEMPLATE/engineering.yml");
+    writeFileSync(path, readFileSync(path, "utf8").replaceAll("required: true", "required: false"));
+    assert.match(checkGovernance(root).join("\n"), /engineering form missing required validations/);
+  }));
+test("engineering intake must be a regular file", () =>
+  fixture((root) => {
+    const path = join(root, ".github/ISSUE_TEMPLATE/engineering.yml");
+    rmSync(path);
+    mkdirSync(path);
+    assert.match(checkGovernance(root).join("\n"), /engineering intake is not a regular file/);
+  }));
+test("Markdown engineering intake requires frontmatter", () =>
+  fixture((root) => {
+    rmSync(join(root, ".github/ISSUE_TEMPLATE/engineering.yml"));
+    writeFileSync(join(root, ".github/ISSUE_TEMPLATE/engineering_task.md"), "# Missing frontmatter\n");
+    assert.match(checkGovernance(root).join("\n"), /Markdown engineering template missing frontmatter/);
   }));
