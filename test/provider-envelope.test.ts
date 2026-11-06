@@ -303,3 +303,47 @@ test("experimental v2 rejects malformed nested Claude evidence and Codex presenc
     );
   }
 });
+
+
+test("experimental Claude envelope rejects malformed nested rules, issues and evidence", () => {
+  const report = comparePolicies(
+    claude("before", { ask: ["Bash(npm test)"] }),
+    claude("after", { allow: ["Bash(npm test)"] }),
+  );
+  const before = report.policies[0]!;
+  const finding = report.findings[0]!;
+  const invalid = [
+    { ...report, policies: [{ ...before, rules: [null] }, report.policies[1]] },
+    {
+      ...report,
+      policies: [
+        { ...before, rules: [{ ...before.rules[0], evidence: null }] },
+        report.policies[1],
+      ],
+    },
+    {
+      ...report,
+      policies: [
+        { ...before, issues: [{ message: "broken", evidence: null, fingerprint: "x", tool: null }] },
+        report.policies[1],
+      ],
+    },
+    { ...report, policies: [{ ...before, files: [42] }, report.policies[1]] },
+    {
+      ...report,
+      findings: [{ ...finding, before: { ...finding.before, evidence: [null] } }],
+    },
+    {
+      ...report,
+      findings: [
+        { ...finding, after: { ...finding.after, evidence: [{ revision: 7, file: "x", pointer: "" }] } },
+      ],
+    },
+  ];
+  for (const candidate of invalid) {
+    assert.throws(
+      () => createExperimentalClaudeEnvelope(candidate as typeof report),
+      /Invalid or unsupported Claude comparison report/,
+    );
+  }
+});
