@@ -39,11 +39,17 @@ if (
 }
 
 const published = versions.includes(pkg.version);
+const validSha512 = (value) => {
+  if (typeof value !== "string" || !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(value))
+    return false;
+  const encoded = value.slice("sha512-".length);
+  const digest = Buffer.from(encoded, "base64");
+  return digest.length === 64 && digest.toString("base64") === encoded;
+};
 if (published) {
   if (
     tags.next !== pkg.version ||
-    typeof integrity !== "string" ||
-    !/^sha512-[A-Za-z0-9+/]+={0,2}$/.test(integrity)
+    !validSha512(integrity)
   ) {
     throw new Error(
       "Published rc.3 requires matching next tag and sha512 integrity",

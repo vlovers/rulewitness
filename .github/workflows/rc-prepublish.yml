@@ -52,7 +52,7 @@ jobs:
               cat "$RUNNER_TEMP/rc-lookup-error.txt" >&2
               exit 1
             fi
-            printf 'null\\n' > "$RUNNER_TEMP/rc-integrity.json"
+            printf 'null\n' > "$RUNNER_TEMP/rc-integrity.json"
           fi
           node scripts/verify-rc-registry.mjs "$RUNNER_TEMP/versions.json" "$RUNNER_TEMP/tags.json" "$RUNNER_TEMP/rc-integrity.json"
       - name: Check compiled tarball and isolated installed consumer

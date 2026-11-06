@@ -13,7 +13,7 @@ type RegistryCase = {
   accepted: boolean;
 };
 const baseline = ["0.3.0", "0.4.0-rc.1", "0.4.0-rc.2"];
-const sha512 = "sha512-" + "a".repeat(86) + "==";
+const sha512 = "sha512-" + Buffer.alloc(64, 0).toString("base64");
 
 const cases: RegistryCase[] = [
   {
@@ -49,6 +49,20 @@ const cases: RegistryCase[] = [
     versions: [...baseline, "0.4.0-rc.3"],
     tags: { latest: "0.3.0", next: "0.4.0-rc.3" },
     integrity: "sha1-unsafe",
+    accepted: false,
+  },
+  {
+    name: "published with truncated sha512 digest is unsafe",
+    versions: [...baseline, "0.4.0-rc.3"],
+    tags: { latest: "0.3.0", next: "0.4.0-rc.3" },
+    integrity: "sha512-" + Buffer.alloc(32, 0).toString("base64"),
+    accepted: false,
+  },
+  {
+    name: "published with noncanonical sha512 encoding is unsafe",
+    versions: [...baseline, "0.4.0-rc.3"],
+    tags: { latest: "0.3.0", next: "0.4.0-rc.3" },
+    integrity: sha512 + "=",
     accepted: false,
   },
   {
