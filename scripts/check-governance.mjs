@@ -35,24 +35,26 @@ export function checkGovernance(directory) {
   // A Markdown and a YAML engineering-task template are competing intake paths.
   // Check the final integrated tree, not just this PR's changed files.
   const templateDir = resolve(root, ".github/ISSUE_TEMPLATE");
+  const templateError = ".github/ISSUE_TEMPLATE";
   try {
-    if (!inside(root, realpathSync(templateDir))) throw Error("unsafe directory");
+    const directory = realpathSync(templateDir);
+    if (!inside(root, directory)) throw Error("unsafe directory");
     const names = readdirSync(templateDir).filter((name) =>
       /^(?:engineering(?:_task)?|engineering-task)\.(?:md|ya?ml)$/i.test(name),
     );
     if (names.length !== 1) {
       const count = names.length;
       const details = count ? ": " + names.sort().join(", ") : "";
-      errors.push(
-        `.github/ISSUE_TEMPLATE: expected exactly one engineering intake template, found ${count}${details}`,
-      );
-    } else if (
-      !inside(root, realpathSync(resolve(templateDir, names[0])))
-    ) {
-      errors.push(".github/ISSUE_TEMPLATE: engineering intake escapes repository");
+      const reason = "expected exactly one engineering intake template";
+      errors.push(`${templateError}: ${reason}, found ${count}${details}`);
+    } else {
+      const target = realpathSync(resolve(templateDir, names[0]));
+      if (!inside(root, target)) {
+        errors.push(`${templateError}: engineering intake escapes repository`);
+      }
     }
   } catch {
-    errors.push(".github/ISSUE_TEMPLATE: missing or unsafe template directory");
+    errors.push(`${templateError}: missing or unsafe template directory`);
   }
   for (const name of required) {
     const file = resolve(root, name);
