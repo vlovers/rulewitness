@@ -5,7 +5,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-const missing = "npm error code E404\nnpm error 404 rulewitness@0.4.0-rc.3 is not in this registry.\n";
+const missing =
+  "npm error code E404\nnpm error 404 rulewitness@0.4.0-rc.3 is not in this registry.\n";
 const cases = [
   {
     name: "confirmed E404 permits an absent candidate",
@@ -15,7 +16,8 @@ const cases = [
   },
   {
     name: "legacy npm ERR! E404 format is accepted",
-    error: "npm ERR! code E404\nnpm ERR! 404 rulewitness@0.4.0-rc.3 not found\n",
+    error:
+      "npm ERR! code E404\nnpm ERR! 404 rulewitness@0.4.0-rc.3 not found\n",
     versions: ["0.3.0", "0.4.0-rc.2"],
     accepted: true,
   },
