@@ -12,12 +12,12 @@ const lock = read("package-lock.json");
 const versions = read(versionsPath);
 const tags = read(tagsPath);
 const integrity = read(integrityPath);
-const previousNext = "0.4.0-rc.2";
+const previousNext = "0.4.0-rc.3";
 const stable = "0.3.0";
 
 if (
   pkg.name !== "rulewitness" ||
-  pkg.version !== "0.4.0-rc.3" ||
+  !/^0\.4\.0-rc\.[1-9]\d*$/.test(pkg.version) ||
   lock.name !== pkg.name ||
   lock.version !== pkg.version ||
   lock.packages?.[""]?.name !== pkg.name ||
@@ -53,16 +53,16 @@ const validSha512 = (value) => {
 if (published) {
   if (tags.next !== pkg.version || !validSha512(integrity)) {
     throw new Error(
-      "Published rc.3 requires matching next tag and sha512 integrity",
+      "Published candidate requires matching next tag and sha512 integrity",
     );
   }
   console.log(
-    "Registry state: published rc.3 verified, stable latest preserved",
+    "Registry state: published candidate verified, stable latest preserved",
   );
 } else {
   if (tags.next !== previousNext || integrity !== null)
     throw new Error(
-      "Unpublished rc.3 must preserve previous next and have no integrity",
+      "Unpublished candidate must preserve previous next and have no integrity",
     );
-  console.log("Registry state: unpublished rc.3, stable latest preserved");
+  console.log("Registry state: unpublished candidate, stable latest preserved");
 }
