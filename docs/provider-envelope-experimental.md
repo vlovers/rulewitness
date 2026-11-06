@@ -3,9 +3,9 @@
 **Status: experimental, opt-in TypeScript API.** The existing Claude Code
 `scan`, `compare` and `test` CLI commands and JSON report schema v1 are
 unchanged. The envelope does not grant access, authorize commands or promise
-native agent behavior. This API is introduced by the source PR for review;
+native agent behavior. This API was merged to source after rc.3;
 **do not assume it is present in any already-published npm tarball**, including
-`0.4.0-rc.3`. Installed-package checks here use a newly packed test artifact,
+`0.4.0-rc.3`. Installed-package checks use a newly packed test artifact,
 not published npm.
 
 RuleWitness now has two distinct analysis categories:

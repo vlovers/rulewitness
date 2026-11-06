@@ -2,6 +2,23 @@
 
 All notable changes are documented here. Entries marked **Unreleased** describe repository code, not a published npm version.
 
+## 0.4.0-rc.4 — release candidate (NOT YET PUBLISHED)
+
+This release candidate is prepared from the post-merge source after PRs #87, #89 and #88. The package version and lockfile have been advanced, but publication is **not** established until the exact commit passes release checks, a GitHub prerelease is published, and npm registry verification succeeds. Do not represent these changes as part of the immutable rc.3 tarball.
+
+### New since rc.3
+
+- Experimental opt-in schema-v2 provider envelopes: Claude configured-rule modeled comparison and Codex configured-posture comparison are explicitly distinct. The legacy Claude JSON v1 contract and default CLI behavior remain unchanged.
+- Validate supplied nested Claude comparison evidence and reject inconsistent Codex posture evidence, forged runtime flags and malformed presence indicators; retain detached evidence snapshots.
+- Add negative-control tests for missing real Git blob objects across Claude and Codex, preserving fail-closed, read-only behavior.
+- Reconcile historical rc.3 GitHub/npm registry evidence and strengthen release-readiness documentation and regression checks.
+
+### Limitations and release policy
+
+- No runtime authorization guarantee, native Codex command-permission semantics, or proven managed/user configuration precedence. Both provider envelopes report `complete: false` and `runtimeVerified: false`; Codex additionally reports `runtimePermissionDiff: false`.
+- Release on npm `next` only; preserve stable `latest` at `0.3.0` unless separately approved. Never republish rc.3.
+- Before publication, verify exact commit and tag ancestry, Node 24 checks, installed tarball contents, npm version availability, OIDC workflow permissions, provenance and postpublish registry tags.
+
 ## 0.4.0-rc.3 — GitHub prerelease published; npm publication verified on 2026-11-05
 
 The [GitHub prerelease](https://github.com/vlovers/rulewitness/releases/tag/v0.4.0-rc.3) exists at source commit `e0b110b17ca762e3ff1c4a99b5f5bba6f200cba0`. A later [read-only registry check (run 41952270676)](https://github.com/vlovers/rulewitness/actions/runs/41952270676), completed 2026-11-05 02:00 UTC on PR #87 commit `9f156a6818b99702abbdc51fe11f75009fc88a53`, verified that npm `rulewitness@0.4.0-rc.3` was published with a SHA-512 integrity value, `next` pointed to `0.4.0-rc.3`, and stable `latest` remained `0.3.0`. Earlier PR #81 returned `E404`; that is historical evidence, not the latest observation. This registry check and installed-package tests do not establish GitHub-tag-to-npm provenance or a final merged-main release approval. Recheck registry state before relying on current dist-tags. This remains an experimental prerelease and does not establish effective runtime permissions for Claude Code or Codex.
