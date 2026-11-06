@@ -253,8 +253,8 @@ test("experimental v2 Codex envelope retains evidence after caller mutation", ()
   const envelope = createExperimentalCodexEnvelope(comparison, review);
   const snapshot = JSON.stringify(envelope);
   comparison.before.revision = "mutated";
-  comparison.posture.changes.length = 0;
-  review.unresolved.length = 0;
+  Object.assign(comparison.posture, { changes: [] });
+  Object.assign(review, { unresolved: [] });
   assert.equal(JSON.stringify(envelope), snapshot);
   assert.equal(envelope.outcome, "configured-change");
 });
