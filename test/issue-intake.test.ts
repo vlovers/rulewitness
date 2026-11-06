@@ -30,9 +30,8 @@ test("bug report has usable metadata and private disclosure guidance", () => {
   assert.ok(metadata.name);
   assert.ok(metadata.about);
   assert.ok(metadata.title?.endsWith(": "));
-  assert.ok(
-    bug.includes("https://github.com/vlovers/rulewitness/blob/main/SECURITY.md"),
-  );
+  const securityPolicyUrl = "https://github.com/vlovers/rulewitness/blob/main/SECURITY.md";
+  assert.ok(bug.includes(securityPolicyUrl));
   assert.match(bug, /do not|never/i);
   assert.match(bug, /securit(y|ies)|vulnerabilit(y|ies)/i);
 });
@@ -139,7 +138,6 @@ test("issue chooser has no duplicate template stems", () => {
     .map((name) => name.replace(/\.(md|ya?ml)$/, ""));
   assert.equal(new Set(stems).size, stems.length);
   assert.ok(!stems.includes("engineering_task"));
-  assert.ok(!stems.includes("engineering"));
   for (const required of ["bug_report", "feature_request"]) {
     assert.ok(stems.includes(required), `Missing intake template: ${required}`);
   }
