@@ -63,3 +63,14 @@ export type {
   CodexPostureDirection,
   CodexPostureReview,
 } from "./codex-posture-review.ts";
+
+// Experimental opt-in envelope. Existing JSON v1 reports and CLI stay unchanged.
+export {
+  createExperimentalClaudeEnvelope,
+  createExperimentalCodexEnvelope,
+} from "./provider-envelope.ts";
+export type {
+  ExperimentalProviderEnvelope,
+  ExperimentalClaudeComparisonEnvelope,
+  ExperimentalCodexPostureEnvelope,
+} from "./provider-envelope.ts";

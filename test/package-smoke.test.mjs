@@ -303,6 +303,7 @@ test("package: dry-run and actual tarball include only documented runtime and do
     "permission-sources",
     "pr-markdown",
     "provider-adapter",
+    "provider-envelope",
     "provider-discovery",
     "provider-snapshot",
     "report",
@@ -894,6 +895,115 @@ console.log("Stable v0.3.0 runtime exports available");`,
       env,
     }),
     /Stable v0\.3\.0 runtime exports available/,
+  );
+});
+
+test("package: experimental provider envelopes load from installed tarball", () => {
+  writeFileSync(
+    join(consumer, "verify-experimental-envelopes.mjs"),
+    `import {
+  parsePolicy, comparePolicies, createExperimentalClaudeEnvelope,
+  inspectCodexPosture, compareCodexPosture, reviewCodexPosture,
+  createExperimentalCodexEnvelope,
+} from "rulewitness";
+const first = parsePolicy("base", { ".claude/settings.json": JSON.stringify({ permissions: { ask: ["Bash(npm test)"] } }) });
+const second = parsePolicy("head", { ".claude/settings.json": JSON.stringify({ permissions: { allow: ["Bash(npm test)"] } }) });
+const originalClaudeReport = comparePolicies(first, second);
+const claude = createExperimentalClaudeEnvelope(originalClaudeReport);
+const claudeSnapshot = JSON.stringify(claude);
+originalClaudeReport.revisions[0] = "changed-after-envelope";
+originalClaudeReport.findings.length = 0;
+if (JSON.stringify(claude) !== claudeSnapshot || claude.report === originalClaudeReport)
+  throw new Error("Installed Claude envelope leaked caller-owned report");
+if (claude.schemaVersion !== 2 || claude.analysisKind !== "modeled-permission-decision-diff" ||
+    claude.report.schemaVersion !== 1 || claude.outcome !== "modeled-change" || claude.runtimeVerified !== false)
+  throw new Error("Installed Claude envelope contract mismatch");
+const old = inspectCodexPosture('approval_policy = "on-request"\\nsandbox_mode = "read-only"');
+const next = inspectCodexPosture('approval_policy = "never"\\nsandbox_mode = "workspace-write"');
+const posture = compareCodexPosture(old, next);
+const comparison = {
+  schemaVersion: 1, provider: "codex", scope: "tracked-project-config-posture",
+  before: { revision: "a".repeat(40), path: ".codex/config.toml", present: true, posture: old },
+  after: { revision: "b".repeat(40), path: ".codex/config.toml", present: true, posture: next },
+  posture, uncertain: false, runtimePermissionDiff: false,
+};
+const review = reviewCodexPosture(old, next);
+const codex = createExperimentalCodexEnvelope(comparison, review);
+const codexSnapshot = JSON.stringify(codex);
+comparison.before.revision = "changed-after-envelope";
+Object.assign(comparison.posture, { changes: [] });
+Object.assign(review, { unresolved: [] });
+if (JSON.stringify(codex) !== codexSnapshot || codex.comparison === comparison || codex.review === review)
+  throw new Error("Installed Codex envelope leaked caller-owned evidence");
+if (codex.schemaVersion !== 2 || codex.analysisKind !== "configured-posture-diff" ||
+    codex.outcome !== "configured-change" || codex.runtimePermissionDiff !== false ||
+    codex.runtimeVerified !== false)
+  throw new Error("Installed Codex envelope contract mismatch");
+console.log("Installed experimental envelopes verified");`,
+  );
+  assert.match(
+    execFileSync(process.execPath, ["verify-experimental-envelopes.mjs"], {
+      cwd: consumer,
+      encoding: "utf8",
+      env,
+    }),
+    /Installed experimental envelopes verified/,
+  );
+});
+
+test("package: experimental v2 TypeScript discriminants compile from installed tarball", () => {
+  writeFileSync(
+    join(consumer, "verify-v2-provider-types.ts"),
+    `import {
+  createExperimentalClaudeEnvelope,
+  createExperimentalCodexEnvelope,
+} from "rulewitness";
+import type {
+  ExperimentalProviderEnvelope,
+  ExperimentalClaudeComparisonEnvelope,
+  ExperimentalCodexPostureEnvelope,
+  Report,
+} from "rulewitness";
+type Assert<T extends true> = T;
+type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends
+  (<T>() => T extends B ? 1 : 2) ? true : false;
+type V2Version = Assert<Equal<ExperimentalProviderEnvelope["schemaVersion"], 2>>;
+type NoRuntime = Assert<Equal<ExperimentalProviderEnvelope["runtimeVerified"], false>>;
+type ClaudeKind = Assert<Equal<ExperimentalClaudeComparisonEnvelope["analysisKind"], "modeled-permission-decision-diff">>;
+type CodexKind = Assert<Equal<ExperimentalCodexPostureEnvelope["analysisKind"], "configured-posture-diff">>;
+type NoCodexPermissions = Assert<Equal<ExperimentalCodexPostureEnvelope["runtimePermissionDiff"], false>>;
+function render(value: ExperimentalProviderEnvelope): string {
+  switch (value.analysisKind) {
+    case "modeled-permission-decision-diff":
+      return value.report.provider + value.outcome;
+    case "configured-posture-diff":
+      return value.provider + value.outcome + value.runtimePermissionDiff;
+    default: {
+      const neverValue: never = value;
+      throw new Error(String(neverValue));
+    }
+  }
+}
+const cl: (report: Report) => ExperimentalClaudeComparisonEnvelope = createExperimentalClaudeEnvelope;
+const cx: typeof createExperimentalCodexEnvelope = createExperimentalCodexEnvelope;
+void render; void cl; void cx;
+`,
+  );
+  execFileSync(
+    process.execPath,
+    [
+      join(root, "node_modules/typescript/bin/tsc"),
+      "--noEmit",
+      "--strict",
+      "--module",
+      "nodenext",
+      "--moduleResolution",
+      "nodenext",
+      "--target",
+      "es2024",
+      "verify-v2-provider-types.ts",
+    ],
+    { cwd: consumer, encoding: "utf8", env },
   );
 });
 
