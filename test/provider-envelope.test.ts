@@ -288,7 +288,7 @@ test("experimental v2 rejects malformed nested Claude evidence and Codex presenc
             ...comparison,
             before: {
               ...comparison.before,
-              present: invalidPresent as boolean,
+              present: invalidPresent as unknown as boolean,
             },
           },
           review,
