@@ -7,6 +7,8 @@ on:
       - package-lock.json
       - CHANGELOG.md
       - scripts/verify-rc-registry.mjs
+      - scripts/verify-rc-lookup-error.mjs
+      - test/rc-lookup-error.test.mjs
   workflow_dispatch:
 
 permissions:
@@ -48,10 +50,7 @@ jobs:
           else
             # An absent prerelease is valid before publication, but unexpected
             # registry failures are not. Only a verified 404 may map to null.
-            if ! grep -q 'E404' "$RUNNER_TEMP/rc-lookup-error.txt"; then
-              cat "$RUNNER_TEMP/rc-lookup-error.txt" >&2
-              exit 1
-            fi
+            node scripts/verify-rc-lookup-error.mjs "$RUNNER_TEMP/rc-lookup-error.txt" "$RUNNER_TEMP/versions.json"
             printf 'null\n' > "$RUNNER_TEMP/rc-integrity.json"
           fi
           node scripts/verify-rc-registry.mjs "$RUNNER_TEMP/versions.json" "$RUNNER_TEMP/tags.json" "$RUNNER_TEMP/rc-integrity.json"

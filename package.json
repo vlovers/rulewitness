@@ -37,7 +37,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test test/*.test.ts",
+    "test": "node --experimental-strip-types --test test/*.test.ts test/rc-lookup-error.test.mjs",
     "test:package": "node --test test/package-smoke.test.mjs",
     "prepack": "npm run build",
     "format": "prettier --write .",
