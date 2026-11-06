@@ -19,7 +19,9 @@ if (
   !versions.every((version) => typeof version === "string") ||
   versions.includes(candidate)
 ) {
-  throw new Error("npm lookup failure is not a verified absent release candidate");
+  throw new Error(
+    "npm lookup failure is not a verified absent release candidate",
+  );
 }
 console.log(
   "Confirmed absent release candidate; fallback to JSON null is permitted",
