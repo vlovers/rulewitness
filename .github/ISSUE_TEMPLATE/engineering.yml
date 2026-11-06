@@ -17,14 +17,24 @@ body:
     id: outcome
     attributes:
       label: Outcome and acceptance criteria
-      description: State the user-visible or governance outcome and independently verifiable criteria.
+      description: >-
+        State the user-visible or governance outcome and independently verifiable criteria.
+        For analyzer/API changes, explicitly address published JSON schema v1,
+        CLI exit codes 0/1/2/3 (including uncertainty exit 3), complete:false,
+        fail-closed handling of unsupported rules and missing Git objects,
+        and backward compatibility. Experimental Codex configured posture is
+        not effective runtime authorization.
     validations:
       required: true
   - type: textarea
     id: boundaries
     attributes:
       label: Scope and exclusions
-      description: "Explicitly list paths allowed to change, forbidden paths, and project-specific invariants (npm CLI, semantic permission witnesses and release safety)."
+      description: >-
+        List allowed and forbidden paths, trust boundaries and non-goals.
+        Never execute analyzed settings, commands or hooks, fetch untrusted Git
+        revisions, mutate Git state during analysis, or expose credentials.
+        State read-only fork/consumer security and release safety implications.
     validations:
       required: true
   - type: textarea
@@ -38,7 +48,13 @@ body:
     id: verification
     attributes:
       label: Verification plan
-      description: "At issue creation, list planned commands, negative/security cases, required CI and proposed independent reviewer. At handoff, record the actual head SHA, executed commands and CI results. Never claim pending CI passed."
+      description: >-
+        At issue creation list planned commands, independent semantic oracle,
+        malformed/untrusted Git and uncertainty regression cases, required CI,
+        isolated installed-package consumer checks when relevant, and an
+        independent reviewer. At handoff record exact head SHA, actual commands,
+        statuses and links; distinguish PASS, FAIL, N/A and NOT RUN.
+        Never claim pending CI passed.
     validations:
       required: true
   - type: textarea
