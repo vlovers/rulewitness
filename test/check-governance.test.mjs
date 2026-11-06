@@ -212,7 +212,10 @@ test("engineering form missing required validations is rejected", () =>
     const path = join(root, ".github/ISSUE_TEMPLATE/engineering.yml");
     writeFileSync(
       path,
-      readFileSync(path, "utf8").replaceAll("required: true", "required: false"),
+      readFileSync(path, "utf8").replaceAll(
+        "required: true",
+        "required: false",
+      ),
     );
     assert.match(
       checkGovernance(root).join("\n"),

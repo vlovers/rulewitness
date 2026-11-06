@@ -52,7 +52,9 @@ export function checkGovernance(directory) {
       if (!inside(root, target)) {
         errors.push(`${templateError}: engineering intake escapes repository`);
       } else if (!statSync(target).isFile()) {
-        errors.push(`${templateError}: engineering intake is not a regular file`);
+        errors.push(
+          `${templateError}: engineering intake is not a regular file`,
+        );
       } else {
         const content = readFileSync(target, "utf8");
         if (/\.ya?ml$/i.test(names[0])) {
@@ -78,16 +80,22 @@ export function checkGovernance(directory) {
             new Set(ids).size !== ids.length ||
             expected.some((id) => !ids.includes(id))
           ) {
-            errors.push(`${templateError}: engineering form missing or duplicate fields`);
+            errors.push(
+              `${templateError}: engineering form missing or duplicate fields`,
+            );
           }
           if (
             (content.match(/^\s+required: true\s*$/gm) ?? []).length <
             expected.length - 1
           ) {
-            errors.push(`${templateError}: engineering form missing required validations`);
+            errors.push(
+              `${templateError}: engineering form missing required validations`,
+            );
           }
         } else if (!/^---\r?\n[\s\S]*?\r?\n---\r?\n/.test(content)) {
-          errors.push(`${templateError}: Markdown engineering template missing frontmatter`);
+          errors.push(
+            `${templateError}: Markdown engineering template missing frontmatter`,
+          );
         }
       }
     }
