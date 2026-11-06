@@ -193,26 +193,53 @@ test("single Markdown engineering intake is accepted", () =>
 
 test("engineering form without metadata or fields is rejected", () =>
   fixture((root) => {
-    writeFileSync(join(root, ".github/ISSUE_TEMPLATE/engineering.yml"), "name: Engineering\n");
-    assert.match(checkGovernance(root).join("\n"), /engineering form missing metadata/);
-    assert.match(checkGovernance(root).join("\n"), /engineering form missing or duplicate fields/);
+    writeFileSync(
+      join(root, ".github/ISSUE_TEMPLATE/engineering.yml"),
+      "name: Engineering\n",
+    );
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /engineering form missing metadata/,
+    );
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /engineering form missing or duplicate fields/,
+    );
   }));
+
 test("engineering form missing required validations is rejected", () =>
   fixture((root) => {
     const path = join(root, ".github/ISSUE_TEMPLATE/engineering.yml");
-    writeFileSync(path, readFileSync(path, "utf8").replaceAll("required: true", "required: false"));
-    assert.match(checkGovernance(root).join("\n"), /engineering form missing required validations/);
+    writeFileSync(
+      path,
+      readFileSync(path, "utf8").replaceAll("required: true", "required: false"),
+    );
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /engineering form missing required validations/,
+    );
   }));
+
 test("engineering intake must be a regular file", () =>
   fixture((root) => {
     const path = join(root, ".github/ISSUE_TEMPLATE/engineering.yml");
     rmSync(path);
     mkdirSync(path);
-    assert.match(checkGovernance(root).join("\n"), /engineering intake is not a regular file/);
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /engineering intake is not a regular file/,
+    );
   }));
+
 test("Markdown engineering intake requires frontmatter", () =>
   fixture((root) => {
     rmSync(join(root, ".github/ISSUE_TEMPLATE/engineering.yml"));
-    writeFileSync(join(root, ".github/ISSUE_TEMPLATE/engineering_task.md"), "# Missing frontmatter\n");
-    assert.match(checkGovernance(root).join("\n"), /Markdown engineering template missing frontmatter/);
+    writeFileSync(
+      join(root, ".github/ISSUE_TEMPLATE/engineering_task.md"),
+      "# Missing frontmatter\n",
+    );
+    assert.match(
+      checkGovernance(root).join("\n"),
+      /Markdown engineering template missing frontmatter/,
+    );
   }));

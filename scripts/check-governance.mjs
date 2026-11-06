@@ -56,15 +56,34 @@ export function checkGovernance(directory) {
       } else {
         const content = readFileSync(target, "utf8");
         if (/\.ya?ml$/i.test(names[0])) {
-          const ids = [...content.matchAll(/^\s+id: ([a-z_]+)\s*$/gm)].map((match) => match[1]);
-          const expected = ["parent", "outcome", "boundaries", "ownership", "verification", "handoff", "safety"];
-          if (!/^name:\s*\S/m.test(content) || !/^description:\s*\S/m.test(content)) {
+          const ids = [...content.matchAll(/^\s+id: ([a-z_]+)\s*$/gm)].map(
+            (match) => match[1],
+          );
+          const expected = [
+            "parent",
+            "outcome",
+            "boundaries",
+            "ownership",
+            "verification",
+            "handoff",
+            "safety",
+          ];
+          if (
+            !/^name:\s*\S/m.test(content) ||
+            !/^description:\s*\S/m.test(content)
+          ) {
             errors.push(`${templateError}: engineering form missing metadata`);
           }
-          if (new Set(ids).size !== ids.length || expected.some((id) => !ids.includes(id))) {
+          if (
+            new Set(ids).size !== ids.length ||
+            expected.some((id) => !ids.includes(id))
+          ) {
             errors.push(`${templateError}: engineering form missing or duplicate fields`);
           }
-          if ((content.match(/^\s+required: true\s*$/gm) ?? []).length < expected.length - 1) {
+          if (
+            (content.match(/^\s+required: true\s*$/gm) ?? []).length <
+            expected.length - 1
+          ) {
             errors.push(`${templateError}: engineering form missing required validations`);
           }
         } else if (!/^---\r?\n[\s\S]*?\r?\n---\r?\n/.test(content)) {
