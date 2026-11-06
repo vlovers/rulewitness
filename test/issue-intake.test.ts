@@ -7,7 +7,6 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 const bug = read(".github/ISSUE_TEMPLATE/bug_report.md");
-const task = read(".github/ISSUE_TEMPLATE/engineering_task.md");
 const security = read("SECURITY.md");
 const contributing = read("CONTRIBUTING.md");
 const chooser = read(".github/ISSUE_TEMPLATE/config.yml");
@@ -26,27 +25,14 @@ function frontmatter(markdown: string): Record<string, string> {
   return Object.fromEntries(entries);
 }
 
-test("both GitHub Issue templates have distinct, usable metadata", () => {
-  const bugMetadata = frontmatter(bug);
-  const taskMetadata = frontmatter(task);
-  for (const metadata of [bugMetadata, taskMetadata]) {
-    assert.ok(metadata.name);
-    assert.ok(metadata.about);
-    assert.ok(metadata.title?.endsWith(": "));
-  }
-  assert.notEqual(bugMetadata.name, taskMetadata.name);
-  assert.notEqual(bugMetadata.title, taskMetadata.title);
-});
-
-test("public intake links to the canonical security policy", () => {
-  for (const template of [bug, task]) {
-    assert.match(
-      template,
-      /https:\/\/github\.com\/vlovers\/rulewitness\/blob\/main\/SECURITY\.md/,
-    );
-    assert.match(template, /do not|never/i);
-    assert.match(template, /securit(y|ies)|vulnerabilit(y|ies)/i);
-  }
+test("bug report has usable metadata and private disclosure guidance", () => {
+  const metadata = frontmatter(bug);
+  assert.ok(metadata.name);
+  assert.ok(metadata.about);
+  assert.ok(metadata.title?.endsWith(": "));
+  assert.match(bug, /https:\\/\\/github\\.com\\/vlovers\\/rulewitness\\/blob\\/main\\/SECURITY\\.md/);
+  assert.match(bug, /do not|never/i);
+  assert.match(bug, /securit(y|ies)|vulnerabilit(y|ies)/i);
 });
 
 test("bug intake collects reproducible, sanitized CLI evidence", () => {
@@ -61,20 +47,6 @@ test("bug intake collects reproducible, sanitized CLI evidence", () => {
     /independent review/i,
   ]) {
     assert.match(bug, term);
-  }
-});
-
-test("task intake separates review, release and runtime claims", () => {
-  for (const term of [
-    /non-goals/i,
-    /independently reviewed/i,
-    /published/i,
-    /runtime authorization/i,
-    /exit(s)? 0\/1\/2\/3/i,
-    /installed npm consumer/i,
-    /separate authorization/i,
-  ]) {
-    assert.match(task, term);
   }
 });
 
@@ -164,11 +136,9 @@ test("issue chooser has no duplicate template stems", () => {
     .filter((name) => /\.(md|ya?ml)$/.test(name) && name !== "config.yml")
     .map((name) => name.replace(/\.(md|ya?ml)$/, ""));
   assert.equal(new Set(stems).size, stems.length);
-  for (const required of [
-    "bug_report",
-    "engineering_task",
-    "feature_request",
-  ]) {
+  assert.ok(!stems.includes("engineering_task"));
+  assert.ok(!stems.includes("engineering"));
+  for (const required of ["bug_report", "feature_request"]) {
     assert.ok(stems.includes(required), `Missing intake template: ${required}`);
   }
 });
